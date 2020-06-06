@@ -2,13 +2,13 @@
 This file is the main function that parses user argument and runs experiments.
 
 Date:
-    November 6, 2019
+    June 5, 2020
 
 Project:
-    LogicGAN
+    ECE653 Final Project
 
 Authors:
-    name: Vineel Nagisetty, Laura Graves, Joseph Scott, Vijay Ganesh
+    name: Vineel Nagisetty, Laura Graves, Joseph Scott
     contact: vineel.nagisetty@uwaterloo.ca
 """
 
@@ -31,4 +31,3 @@ def main():
 
 def run(args:argparse.Namespace) -> None:
     pass
-
