@@ -20,5 +20,5 @@ class Generator:
 
 
 class AbstractGenerator:
-    def generateAdversarialExample(self):
+    def generateAdversarialExample(self, image, method):
         pass
