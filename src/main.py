@@ -21,7 +21,7 @@ def main():
     The main function that parses arguments
     :return:
     """
-    parser = argparse.ArgumentParser(description="run the experiment using regular and logic GANs")
+    parser = argparse.ArgumentParser(description="run the fuzzer on ")
     try:
         args = parser.parse_args()
         run(args)
@@ -29,5 +29,5 @@ def main():
         print(sys.stderr, e)
 
 
-def run(args:argparse.Namespace) -> None:
+def run(args: argparse.Namespace) -> None:
     pass

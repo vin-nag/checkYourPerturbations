@@ -16,6 +16,7 @@ from src.generator.factory import AbstractGenerator
 import numpy as np
 import torch
 
+
 class Fuzzer(AbstractGenerator):
     def __init__(self, **kwargs):
         self.model = kwargs.model

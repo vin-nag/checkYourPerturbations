@@ -14,6 +14,10 @@ Authors:
 
 import enum
 
+demo = {
+    "model.h5": [("img.png", 1)]
+}
+
 normal = {
     "model.h5": [("img.png", 1)],
     "model2.h5": [("img2.png", 1), ("img.png", 1)]
@@ -27,6 +31,7 @@ adversarial = {
 class BenchmarkEnums(enum.Enum):
     Normal = normal
     Adversarial = adversarial
+    Demo = demo
 
 
 class Benchmark:

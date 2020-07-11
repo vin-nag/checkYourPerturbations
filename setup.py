@@ -4,7 +4,7 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="Check Your Perturbations", # Replace with your own username
+    name="Check Your Perturbations",
     version="0.0.1",
     author="Vineel Nagisetty, Laura Graves, and Joseph Scott",
     author_email="vineel.nagisetty@uwaterloo.ca",
