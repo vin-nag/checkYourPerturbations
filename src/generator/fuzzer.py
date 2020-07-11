@@ -12,20 +12,17 @@ Authors:
     contact: vineel.nagisetty@uwaterloo.ca
 """
 
-from src.generator.factory import AbstractGenerator
+from src.generator.template import GeneratorTemplate
 import numpy as np
 import torch
 
 
-class Fuzzer(AbstractGenerator):
-    def __init__(self, **kwargs):
-        self.model = kwargs.model
-        self.input = kwargs.input
-        self.label = kwargs.label
-        if "type" in kwargs:
-            self.type = kwargs.type
-        else:
-            self.type = "random"
+class Fuzzer(GeneratorTemplate):
+    def __init__(self, model, image, label):
+        self.model = model
+        self.input = image
+        self.label = label
+        self.type = "random"
 
     def generateAdversarialExample(self, epsilon = 2/255, method="vin"):
         nIters = 0

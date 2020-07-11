@@ -14,7 +14,6 @@ Authors:
 from src.benchmark import Benchmark
 from multiprocessing import Process
 import time
-from src.generator.factory import AbstractGenerator
 from func_timeout import func_timeout, FunctionTimedOut
 from sklearn.preprocessing import normalize
 import numpy as np
@@ -29,12 +28,14 @@ class Evaluator:
                                              'perturbed label', 'time'))
 
     def evaluate(self, timeMax=1000, similarityType="l2", similarityScore=1):
+        i = 0
         for generator in self.generators:
-            for model in self.benchmark.keys():
-                for img, label in self.benchmark[model]:
-                    timeTaken, perturbedImg = self.par2scores(generator=generator, model=model, img=img,
-                                                              trueLabel=label, timeMax=timeMax)
-                    self.results.append(generator, model, img, label, perturbedImg, model(perturbedImg), timeTaken)
+            for index, row in self.benchmark.getData().iterrows():
+                print(row)
+                timeTaken, perturbedImg = self.par2scores(generator=generator, model=row['model'], img=row['image'],
+                                                          trueLabel=row['label'], timeMax=timeMax)
+                self.results.loc[i] = [generator, row['model'], row['image'], row['label'], perturbedImg,
+                                       row['model'](perturbedImg), timeTaken]
 
     @staticmethod
     def par2scores(generator, model, img, trueLabel, timeMax):

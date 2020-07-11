@@ -1,8 +1,8 @@
 """
-This file contains the stub for benchmark code.
+This file contains the benchmark code.
 
 Date:
-    June 5, 2020
+    July 5, 2020
 
 Project:
     ECE653 Final Project
@@ -12,37 +12,33 @@ Authors:
     contact: vineel.nagisetty@uwaterloo.ca
 """
 
-import enum
-
-demo = {
-    "model.h5": [("img.png", 1)]
-}
-
-normal = {
-    "model.h5": [("img.png", 1)],
-    "model2.h5": [("img2.png", 1), ("img.png", 1)]
-}
-
-adversarial = {
-    "model2.h5": ("img2.png", 1)
-}
+from enum import Enum
+from tensorflow import keras
+import numpy as np
+import pandas as pd
 
 
-class BenchmarkEnums(enum.Enum):
-    Normal = normal
-    Adversarial = adversarial
-    Demo = demo
+class BenchmarkEnums(Enum):
+    Demo = {"./../src/data/models/content/model": [("./../src/data/images/image.npy", 1), ]}
 
 
 class Benchmark:
-    def __init__(self):
-        self.data = BenchmarkEnums.Normal
+    def __init__(self, benchmarkType):
+        if benchmarkType not in BenchmarkEnums:
+            raise Exception(f"type: {benchmarkType} not in benchmark.")
+        self.name = benchmarkType.name
+        self.type = benchmarkType.value
+        self.data = pd.DataFrame(columns=['model', 'image', 'label'])
+        self.createBenchmark()
 
     def createBenchmark(self):
-        pass
+        i = 0
+        for modelName in self.type:
+            model = keras.models.load_model(modelName)
+            for imageName, label in self.type[modelName]:
+                image = np.load(imageName)
+                self.data.loc[i] = [model, image, label]
+                i += 1
 
     def getData(self):
         return self.data
-
-    def setData(self, data):
-        self.data = data

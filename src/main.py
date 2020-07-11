@@ -12,8 +12,12 @@ Authors:
     contact: vineel.nagisetty@uwaterloo.ca
 """
 
+
 import argparse
 import sys
+from src.generator.factory import GeneratorSelector, GeneratorTypes
+from src.benchmark import BenchmarkEnums, Benchmark
+from src.evaluator import Evaluator
 
 
 def main():
@@ -30,4 +34,13 @@ def main():
 
 
 def run(args: argparse.Namespace) -> None:
-    pass
+    selector = GeneratorSelector()
+    generators = [selector.getGenerator(x.name) for x in GeneratorTypes]
+    benchmark = Benchmark(BenchmarkEnums.Demo)
+    evaluator = Evaluator(benchmark=benchmark, generators=generators)
+
+    evaluator.evaluate()
+
+
+if __name__ == "__main__":
+    main()
