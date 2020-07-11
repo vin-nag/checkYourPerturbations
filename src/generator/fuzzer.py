@@ -1,11 +1,11 @@
 """
-This file contains the stub for fuzzing code.
+This file contains the template of an abstract generator object.
 
 Date:
-    June 5, 2020
+    July 5, 2020
 
 Project:
-    ECE653 Final Project
+    ECE653 Final Project: Check Your Perturbations
 
 Authors:
     name: Vineel Nagisetty, Laura Graves, Joseph Scott
@@ -13,99 +13,100 @@ Authors:
 """
 
 from src.generator.template import GeneratorTemplate
+import tensorflow as tf
+from tensorflow.keras import utils, losses
 import numpy as np
-import torch
 
 
 class Fuzzer(GeneratorTemplate):
-    def __init__(self, model, image, label):
-        self.model = model
-        self.input = image
-        self.label = label
-        self.type = "random"
+    """ This class is the template of a Fuzzer. It needs to be extended and the fuzzStep
+    function needs to be overridden."""
 
-    def generateAdversarialExample(self, epsilon = 2/255, method="vin"):
-        nIters = 0
+    def fuzzStep(self, image, epsilon):
+        """ This function needs to be overridden by the classes extending Fuzzer. """
+        return self.image
 
-        output = self.model(self.image.float())
-        pred = output.data.max(1, keepdim=True)[1]
+    def generateAdversarialExample(self, epsilon=12/255):
+        """
+        This overrides the function from the GeneratorTemplate class.
+        :param epsilon: the value of each fuzzing step.
+        :return: np.array representing fuzzed image.
+        """
+        fuzzImage = self.image
+        while True:
+            fuzzPrediction = np.argmax(self.model.predict(fuzzImage), axis=1)[0]
+            if fuzzPrediction != self.label:
+                break
+            fuzzImage = self.fuzzStep(fuzzImage, epsilon=epsilon)
+        return fuzzImage
 
-        if method == "step":
-            fuzzimage = self.stepFuzz(epsilon, zero=True)
-        if method == "norm":
-            fuzzimage = self.normFuzz(epsilon)
-        if method == "laplace":
-            fuzzimage = self.laplaceFuzz(epsilon)
-        if method == "vin":
-            target = torch.tensor(np.random.randint(10, size=[64]))
-            fuzzimage = self.vinFuzz(target, epsilon)
 
-        fuzzoutput = self.model(fuzzimage.float())
-        fuzzpred = fuzzoutput.data.max(1, keepdim=True)[1]
+class StepFuzzer(Fuzzer):
+    """ This class extends the Fuzzer class. """
 
-        correctclass = pred.eq(self.label.data.view_as(pred))
-        adversarialclass = ~pred.eq(fuzzpred.data.view_as(pred))
+    def fuzzStep(self, image, epsilon):
+        fuzzArray = np.random.randint(-1, 2, self.imageShape)
+        return np.clip((image + epsilon * fuzzArray), -1, 1)
 
-        while (correctclass & adversarialclass).sum() < 1:
 
-            nIters += 1
+class NormFuzzer(Fuzzer):
+    """ This class extends the Fuzzer class. """
 
-            if method == "step":
-                fuzzimage = self.stepFuzz(epsilon, zero=True)
-            if method == "norm":
-                fuzzimage = self.normFuzz(epsilon)
-            if method == "laplace":
-                fuzzimage = self.laplaceFuzz(epsilon)
-            if method == "vin":
-                fuzzimage = self.vinFuzz(epsilon)
+    def fuzzStep(self, image, epsilon):
+        """
+        This method overrides the function in Fuzzer class.
+        :param image: np.array of the image to fuzz
+        :param epsilon: float the step size to fuzz each time
+        :return: np.array the fuzzed image.
+        """
+        fuzzArray = np.random.normal(0, epsilon, self.imageShape)
+        return np.clip((image + fuzzArray), -1, 1)
 
-            fuzzoutput = self.model(fuzzimage.float())
-            fuzzpred = fuzzoutput.data.max(1, keepdim=True)[1]
 
-            correctclass = pred.eq(self.label.data.view_as(pred))
-            adversarialclass = ~pred.eq(fuzzpred.data.view_as(pred))
+class LaplaceFuzzer(Fuzzer):
+    """ This class extends the Fuzzer class. """
 
-    def stepFuzz(self, epsilon=2 / 255, zero=True):
-        if zero:
-            fuzzarray = np.random.randint(-1, 2, [64, 1, 28, 28])
-        else:
-            fuzzarray = np.random.choice([-1, 1], [64, 1, 28, 28])
-        fuzzimage = torch.clamp((self.image + epsilon * fuzzarray), -1, 1)
-        return fuzzimage
+    def fuzzStep(self, image, epsilon):
+        """
+        This method overrides the function in Fuzzer class.
+        :param image: np.array of the image to fuzz
+        :param epsilon: float the step size to fuzz each time
+        :return: np.array the fuzzed image.
+        """
+        fuzzArray = np.random.laplace(0, epsilon, self.imageShape)
+        return np.clip((image + fuzzArray), -1, 1)
 
-    def normFuzz(self, epsilon=2 / 255):
-        fuzzarray = np.random.normal(0, epsilon, [64, 1, 28, 28])
-        fuzzimage = torch.clamp((self.image + fuzzarray), -1, 1)
-        return fuzzimage
 
-    def laplaceFuzz(self, epsilon=2 / 255):
-        fuzzarray = np.random.laplace(0, epsilon, [64, 1, 28, 28])
-        fuzzimage = np.clip((self.image + fuzzarray), -1, 1)
-        return fuzzimage
+class VinFuzzer(Fuzzer):
+    """ This class extends the Fuzzer class. """
 
-    # adds fuzz to an image based on the Nagisetty method
-    def vinFuzz(self, target, epsilon=2 / 255, numIters=20):
-        criterion = torch.nn.functional.nll_loss
+    def fuzzStep(self, image, epsilon, numIters=20):
+        """
+        This method overrides the function in Fuzzer class.
+        :param numIters: int the number of iterations to perform this fuzzing
+        :param image: np.array of the image to fuzz
+        :param epsilon: float the step size to fuzz each time
+        :return: np.array the fuzzed image.
+        """
         i = 0
-        lower = np.clip(self.image - epsilon, -1, 1)
-        upper = np.clip(self.image + epsilon, -1, 1)
+        lower = np.clip(image - epsilon, -1, 1)
+        upper = np.clip(image + epsilon, -1, 1)
         # set perturbation ranges
-        rand = torch.rand(self.image.size())
-        newimage = rand * (upper - lower) + lower
-        newimage = torch.autograd.Variable(newimage.data.float(), requires_grad=True)
-        while (i < numIters):
-            newpred = self.model(newimage)
-            loss = criterion(newpred, target)
-            loss.backward()
-            grad = newimage.grad.sign()
+        lossfn = losses.CategoricalCrossentropy()
+        while i < numIters:
+            rand = np.random.random_sample(image.shape)
+            newImage = tf.convert_to_tensor(rand * (upper - lower) + lower, dtype=np.float32)
+            with tf.GradientTape() as tape:
+                tape.watch(newImage)
+                newpred = tf.squeeze(self.model(newImage))
+                loss = lossfn(newpred, utils.to_categorical(self.label))
+            grad = tape.gradient(loss, newImage)
+            grad = tf.sign(grad)
             for i in range(len(grad)):
                 for j in range(len(grad[0, 0])):
                     for k in range(len(grad[0, 0, 0])):
                         if grad[i, 0, j, k] == 1:
-                            lower[i, 0, j, k] = newimage[i, 0, j, k]
+                            lower[i, 0, j, k] = newImage[i, 0, j, k]
                         if grad[i, 0, j, k] == -1:
-                            upper[i, 0, j, k] = newimage[i, 0, j, k]
-            rand = torch.rand(self.image.size())
-            newimage = rand * (upper - lower) + lower
-            newimage = torch.autograd.Variable(newimage.data.float(), requires_grad=True)
-        return newimage
+                            upper[i, 0, j, k] = newImage[i, 0, j, k]
+        return newImage.numpy()

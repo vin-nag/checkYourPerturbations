@@ -5,26 +5,21 @@ Date:
     June 5, 2020
 
 Project:
-    ECE653 Final Project
+    ECE653 Final Project: Check Your Perturbations
 
 Authors:
     name: Vineel Nagisetty, Laura Graves, Joseph Scott
     contact: vineel.nagisetty@uwaterloo.ca
 """
 
-from src.generator.factory import AbstractGenerator
+from src.generator.template import GeneratorTemplate
 
 
-class SymbolicExecutioner(AbstractGenerator):
-
-    def __init__(self, **kwargs):
-        self.model = kwargs.model
-        self.input = kwargs.input
-        self.label = kwargs.label
-        if "type" in kwargs:
-            self.type = kwargs.type
-        else:
-            self.type = "random"
+class SymbolicExecutioner(GeneratorTemplate):
+    """ This class is the stub for our symbolic execution implementation."""
+    def __init__(self, name, model, image, label, similarityType="l2", similarityMeasure=10):
+        super().__init__(name, model, image, label, similarityType, similarityMeasure)
 
     def generateAdversarialExample(self):
+        """ This method needs to be implemented. TODO: Implement this method. """
         pass

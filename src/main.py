@@ -1,17 +1,16 @@
 """
-This file is the main function that parses user argument and runs experiments.
+This file is the main function that parses user arguments and runs the experiment.
 
 Date:
-    June 5, 2020
+    July 5, 2020
 
 Project:
-    ECE653 Final Project
+    ECE653 Final Project: Check Your Perturbations
 
 Authors:
     name: Vineel Nagisetty, Laura Graves, Joseph Scott
     contact: vineel.nagisetty@uwaterloo.ca
 """
-
 
 import argparse
 import sys
@@ -23,9 +22,9 @@ from src.evaluator import Evaluator
 def main():
     """
     The main function that parses arguments
-    :return:
+    :return: None
     """
-    parser = argparse.ArgumentParser(description="run the fuzzer on ")
+    parser = argparse.ArgumentParser(description="Evaluate adversarial example generators on a given benchmark.")
     try:
         args = parser.parse_args()
         run(args)
@@ -33,13 +32,18 @@ def main():
         print(sys.stderr, e)
 
 
-def run(args: argparse.Namespace) -> None:
+def run(args) -> None:
+    """
+    This function parses the arguments provided and runs the experiment
+    :param args: the arguments provided by the user.
+    :return: None
+    """
     selector = GeneratorSelector()
-    generators = [selector.getGenerator(x.name) for x in GeneratorTypes]
+    generators = selector.getAllGenerators()
     benchmark = Benchmark(BenchmarkEnums.Demo)
     evaluator = Evaluator(benchmark=benchmark, generators=generators)
-
     evaluator.evaluate()
+    sys.exit(0)
 
 
 if __name__ == "__main__":
