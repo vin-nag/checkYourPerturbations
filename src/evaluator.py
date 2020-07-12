@@ -15,6 +15,7 @@ Authors:
 import time
 from func_timeout import func_timeout, FunctionTimedOut
 from sklearn.preprocessing import normalize
+from src.plotter import displayPerturbedImages
 import numpy as np
 import pandas as pd
 
@@ -55,6 +56,8 @@ class Evaluator:
                     similarity = Evaluator.calculateSimilarity(row['image'], perturbedImg, similarityType)
                     print(f"Results for: {generatorName} true label: {row['label']}, perturbed label: "
                           f"{perturbedPrediction}, time: {round(timeTaken, 4)}, similarity: {round(similarity, 4)}.")
+                    displayPerturbedImages(row['image'], "original", row['label'], perturbedImg, generatorName,
+                                           perturbedPrediction)
                 else:
                     similarity = None
                     print(f"Results for: {generatorName} true label: {row['label']} timed out.")

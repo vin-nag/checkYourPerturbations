@@ -26,7 +26,7 @@ class Fuzzer(GeneratorTemplate):
         """ This function needs to be overridden by the classes extending Fuzzer. """
         return self.image
 
-    def generateAdversarialExample(self, epsilon=12/255):
+    def generateAdversarialExample(self, epsilon=5/255):
         """
         This overrides the function from the GeneratorTemplate class.
         :param epsilon: the value of each fuzzing step.
