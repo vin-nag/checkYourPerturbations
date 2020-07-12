@@ -99,7 +99,7 @@ class VinFuzzer(Fuzzer):
             with tf.GradientTape() as tape:
                 tape.watch(newImage)
                 newpred = tf.squeeze(self.model(newImage))
-                loss = lossfn(newpred, utils.to_categorical(self.label))
+                loss = lossfn(newpred, utils.to_categorical(self.label, num_classes=10))
             grad = tape.gradient(loss, newImage)
             grad = tf.sign(grad)
             for i in range(len(grad)):

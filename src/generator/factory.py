@@ -21,8 +21,7 @@ class GeneratorTypes(Enum):
     StepFuzz = StepFuzzer
     NormFuzz = NormFuzzer
     LaplaceFuzz = LaplaceFuzzer
-    # TODO: Fix VinFuzzer
-    # VinFuzz = VinFuzzer
+    VinFuzz = VinFuzzer
 
 
 class GeneratorSelector:
