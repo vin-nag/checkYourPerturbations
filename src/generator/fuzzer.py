@@ -14,7 +14,7 @@ Authors:
 
 from src.generator.template import GeneratorTemplate
 import tensorflow as tf
-from tensorflow.python.keras import utils, losses
+from tensorflow.keras import utils, losses
 import numpy as np
 from src.utils import areSimilar
 
