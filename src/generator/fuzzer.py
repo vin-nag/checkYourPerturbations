@@ -14,7 +14,7 @@ Authors:
 
 from src.generator.template import GeneratorTemplate
 import tensorflow as tf
-from tensorflow.keras import utils, losses
+from tensorflow.python.keras import utils, losses
 import numpy as np
 
 
@@ -92,7 +92,7 @@ class VinFuzzer(Fuzzer):
         lower = np.clip(image - epsilon, -1, 1)
         upper = np.clip(image + epsilon, -1, 1)
         # set perturbation ranges
-        lossfn = losses.CategoricalCrossentropy()
+        lossfn = losses.categorical_crossentropy
         while i < numIters:
             rand = np.random.random_sample(image.shape)
             newImage = tf.convert_to_tensor(rand * (upper - lower) + lower, dtype=np.float32)

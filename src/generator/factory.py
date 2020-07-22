@@ -14,6 +14,7 @@ Authors:
 
 from enum import Enum
 from src.generator.fuzzer import StepFuzzer, NormFuzzer, LaplaceFuzzer, VinFuzzer
+from src.generator.cleverHans import FGSM, BIM
 
 
 class GeneratorTypes(Enum):
@@ -22,6 +23,8 @@ class GeneratorTypes(Enum):
     NormFuzz = NormFuzzer
     LaplaceFuzz = LaplaceFuzzer
     VinFuzz = VinFuzzer
+    bim = BIM
+    fgsm = FGSM
 
 
 class GeneratorSelector:
