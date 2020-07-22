@@ -16,6 +16,7 @@ from src.generator.template import GeneratorTemplate
 import tensorflow as tf
 from tensorflow.python.keras import utils, losses
 import numpy as np
+from src.utils import areSimilar
 
 
 class Fuzzer(GeneratorTemplate):
@@ -35,7 +36,7 @@ class Fuzzer(GeneratorTemplate):
         fuzzImage = self.image
         while True:
             fuzzPrediction = np.argmax(self.model.predict(fuzzImage), axis=1)[0]
-            if fuzzPrediction != self.label:
+            if fuzzPrediction != self.label and areSimilar(self.image, fuzzImage.numpy()):
                 break
             fuzzImage = self.fuzzStep(fuzzImage, epsilon=epsilon)
         return fuzzImage

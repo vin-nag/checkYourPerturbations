@@ -58,8 +58,13 @@ def displayPerturbedImages(img1, name1, label1, img2, name2, label2, fname=None)
 
 
 def plotImage(img):
+    """
+    This function plots a single image
+    :param img: numpy array of input to the model
+    :return: None
+    """
     plt.figure(figsize=(8, 4))
     plt.grid(False)
-    plt.imshow(img.reshape(28, 28))
+    plt.imshow(img)
     plt.title(f"Plotting Image")
     plt.show()
