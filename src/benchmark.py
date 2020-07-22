@@ -21,7 +21,7 @@ import pandas as pd
 
 class BenchmarkEnums(Enum):
     """ This is an enum that contains all the different benchmarks. TODO: Add new Benchmarks. """
-    Demo = {"./../src/data/models/demo.h5": [
+    Demo = {"./../src/data/models/fullyConnected.h5": [
         ("./../src/data/images/MNIST/nine.npy", 9),
         ("./../src/data/images/MNIST/one.npy", 1),
         ("./../src/data/images/MNIST/three.npy", 3),

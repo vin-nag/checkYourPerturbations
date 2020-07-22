@@ -28,7 +28,8 @@ class GeneratorTemplate:
         :param similarityType: str the type of similarity distance function (default: "l2")
         :param similarityMeasure: float the minimum allowable similarity for the perturbed image.
         """
-        assert np.argmax(model.predict(image), axis=1)[0] == label, "the label provided is not correct"
+        pred = np.argmax(model.predict(image), axis=1)[0]
+        assert pred == label, f"the label provided: {label} is not correct (model predicted: {pred})"
         self.name = name
         self.model = model
         self.image = image
