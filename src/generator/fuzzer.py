@@ -36,7 +36,7 @@ class Fuzzer(GeneratorTemplate):
         fuzzImage = self.image
         while True:
             fuzzPrediction = np.argmax(self.model.predict(fuzzImage), axis=1)[0]
-            if fuzzPrediction != self.label and areSimilar(self.image, fuzzImage.numpy()):
+            if fuzzPrediction != self.label and areSimilar(self.image, fuzzImage):
                 break
             fuzzImage = self.fuzzStep(fuzzImage, epsilon=epsilon)
         return fuzzImage

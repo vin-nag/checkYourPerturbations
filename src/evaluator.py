@@ -31,7 +31,7 @@ class Evaluator:
         self.results = pd.DataFrame(columns=('generatorName', 'generatorObj', 'model', 'image', 'label',
                                              'perturbed image', 'perturbed label', 'time', 'similarity'))
 
-    def evaluate(self, timeMax=100, similarityType="l2", similarityMeasure=10, verbose=True):
+    def evaluate(self, timeMax=10, similarityType="l2", similarityMeasure=10, verbose=True):
         """
         This function performs evaluation and records par2scores and similarity measures.
         TODO: Possibly add other measures of evaluation.
@@ -41,12 +41,11 @@ class Evaluator:
         :param similarityMeasure: float maximum allowable similarity score for the perturbed image. Currently not used.
         :return: None
         """
-        i = 0
         for generatorName in self.generators:
+            if verbose:
+                print(f"Starting evaluation for: {generatorName}")
             for index, row in self.benchmark.getData().iterrows():
                 # initialize generator object
-                if verbose:
-                    print(f"Starting evaluation for: {generatorName}")
                 generatorObj = self.generators[generatorName](generatorName, row['model'], row['image'], row['label'],
                                                               similarityType, similarityMeasure)
                 # calculate par2score
@@ -63,8 +62,7 @@ class Evaluator:
                     similarity = None
                     if verbose:
                         print(f"Results for: {generatorName} true label: {row['label']} timed out.")
-                # record data and print
-                self.results.loc[i] = [generatorName, generatorObj, row['model'], row['image'], row['label'],
-                                       perturbedImg, perturbedPrediction, timeTaken, similarity]
+                self.results.append([generatorName, generatorObj, row['model'], row['image'], row['label'],
+                                     perturbedImg, perturbedPrediction, timeTaken, similarity])
         if verbose:
             print("Completed Evaluation.")
