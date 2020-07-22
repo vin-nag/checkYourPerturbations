@@ -40,7 +40,6 @@ def displayPerturbedImages(img1, name1, label1, img2, name2, label2, fname=None)
     This function should display the perturbed images given some details.
     :return:
     """
-    # TODO: Implement this.
     plt.figure(figsize=(8, 4))
     plt.subplot(1, 2, 1)
     plt.xticks([])
@@ -55,4 +54,12 @@ def displayPerturbedImages(img1, name1, label1, img2, name2, label2, fname=None)
     plt.imshow(img2.reshape(28, 28))
     plt.xlabel(label2)
     plt.title(f"Plotting Images for {name1} (left) and {name2} (right)")
+    plt.show()
+
+
+def plotImage(img):
+    plt.figure(figsize=(8, 4))
+    plt.grid(False)
+    plt.imshow(img.reshape(28, 28))
+    plt.title(f"Plotting Image")
     plt.show()
