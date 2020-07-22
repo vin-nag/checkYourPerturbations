@@ -14,13 +14,15 @@ Authors:
 
 from enum import Enum
 from src.generator.fuzzer import StepFuzzer, NormFuzzer, LaplaceFuzzer, VinFuzzer
+from src.generator.cleverHans import CleverHansTemplate
 
 
 class GeneratorTypes(Enum):
     """ This enum contains the various generators we wish to evaluate. """
-    StepFuzz = StepFuzzer
-    NormFuzz = NormFuzzer
-    LaplaceFuzz = LaplaceFuzzer
+    #StepFuzz = StepFuzzer
+    #NormFuzz = NormFuzzer
+    #LaplaceFuzz = LaplaceFuzzer
+    #Clever = CleverHansTemplate
     VinFuzz = VinFuzzer
 
 

@@ -47,4 +47,4 @@ def run(args) -> None:
 
 
 if __name__ == "__main__":
-    main()
+    run(None)
