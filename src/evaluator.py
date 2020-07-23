@@ -31,10 +31,9 @@ class Evaluator:
         self.results = pd.DataFrame(columns=('generatorName', 'generatorObj', 'model', 'image', 'label',
                                              'perturbed image', 'perturbed label', 'time', 'similarity'))
 
-    def evaluate(self, timeMax=10, similarityType="l2", similarityMeasure=10, verbose=True):
+    def evaluate(self, timeMax=50, similarityType="l2", similarityMeasure=10, verbose=True):
         """
         This function performs evaluation and records par2scores and similarity measures.
-        TODO: Possibly add other measures of evaluation.
         :param verbose: bool whether to print statements
         :param timeMax: time (in seconds) of time out default=10.
         :param similarityType: str type of similarity measurement. default=l2
@@ -43,8 +42,10 @@ class Evaluator:
         """
         for generatorName in self.generators:
             if verbose:
-                print(f"Starting evaluation for: {generatorName}")
+                print(f"Starting evaluation for {generatorName}:")
             for index, row in self.benchmark.getData().iterrows():
+                if verbose:
+                    print(f"\tEvaluating model: {row['modelName']} for true label: {row['label']}")
                 # initialize generator object
                 generatorObj = self.generators[generatorName](generatorName, row['model'], row['image'], row['label'],
                                                               similarityType, similarityMeasure)
@@ -54,15 +55,15 @@ class Evaluator:
                 if perturbedImg is not None:
                     similarity = calculateSimilarity(row['image'], perturbedImg, similarityType)
                     if verbose:
-                        print(f"Results for: {generatorName} true label: {row['label']}, perturbed label: "
-                              f"{perturbedPrediction}, time: {round(timeTaken, 4)}, similarity: {round(similarity, 4)}.")
+                        print(f"\t\tResult: perturbed label: {perturbedPrediction}, time: {round(timeTaken, 4)}, "
+                              f"similarity: {round(similarity, 4)}")
                         displayPerturbedImages(row['image'], "original", row['label'], perturbedImg, generatorName,
                                                perturbedPrediction)
                 else:
                     similarity = None
                     if verbose:
-                        print(f"Results for: {generatorName} true label: {row['label']} timed out.")
-                self.results.append([generatorName, generatorObj, row['model'], row['image'], row['label'],
+                        print(f"\t\tResult: timed out.")
+                self.results.append([generatorName, generatorObj, row['modelName'], row['image'], row['label'],
                                      perturbedImg, perturbedPrediction, timeTaken, similarity])
         if verbose:
             print("Completed Evaluation.")
