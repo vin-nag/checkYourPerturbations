@@ -14,7 +14,7 @@ Authors:
 
 import argparse
 import sys
-from src.generator.factory import GeneratorSelector, GeneratorTypes
+from src.generator.factory import GeneratorSelector
 from src.benchmark import BenchmarkEnums, Benchmark
 from src.evaluator import Evaluator
 
@@ -40,11 +40,11 @@ def run(args) -> None:
     """
     selector = GeneratorSelector()
     generators = selector.getAllGenerators()
-    benchmark = Benchmark(BenchmarkEnums.Demo)
+    benchmark = Benchmark(BenchmarkEnums.MNISTTrustedAI)
     evaluator = Evaluator(benchmark=benchmark, generators=generators)
     evaluator.evaluate()
     sys.exit(0)
 
 
 if __name__ == "__main__":
-    main()
+    run(None)

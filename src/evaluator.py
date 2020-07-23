@@ -31,7 +31,7 @@ class Evaluator:
         self.results = pd.DataFrame(columns=('generatorName', 'generatorObj', 'model', 'image', 'label',
                                              'perturbed image', 'perturbed label', 'time', 'similarity'))
 
-    def evaluate(self, timeMax=10, similarityType="l2", similarityMeasure=10, verbose=True):
+    def evaluate(self, timeMax=50, similarityType="l2", similarityMeasure=10, verbose=True):
         """
         This function performs evaluation and records par2scores and similarity measures.
         :param verbose: bool whether to print statements
