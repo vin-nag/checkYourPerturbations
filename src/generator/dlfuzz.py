@@ -530,7 +530,7 @@ class DLFuzzer(GeneratorTemplate):
 
                     perturb_adversial = L2_norm / orig_L2_norm
 
-                    if current_coverage - previous_coverage > 0.01 and perturb_adversial < 0.02:
+                    if current_coverage - previous_coverage > 0.01 and L2_norm < self.similarityMeasure:
                         img_list.append(np.clip(gen_img, -1, 1))
                         # print('coverage diff = ', current_coverage - previous_coverage, 'perturb_adversial = ', perturb_adversial)
 
@@ -544,7 +544,7 @@ class DLFuzzer(GeneratorTemplate):
                         gen_img = np.clip(gen_img, -1, 1)
 
                         adv_list.append(gen_img)
-                        adv_labels.append(np.argmax(model.predict(gen_img)[0]))
+                        adv_labels.append(np.argmax(self.model.predict(gen_img)[0]))
 
                         # print('L2 norm : ' + str(L2_norm))
                         # print('ratio perturb = ', perturb_adversial)
@@ -562,4 +562,4 @@ class DLFuzzer(GeneratorTemplate):
 
         print(f"Adversarial examples found: {len(adv_list)}")
 
-        return orig_img, adv_list, adv_labels
+        return adv_list[0].numpy()
