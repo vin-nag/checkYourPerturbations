@@ -210,7 +210,7 @@ class DLFuzzer(GeneratorTemplate):
                     perturb = loss_neuron_list[-1] * learning_step
 
                     gen_img += perturb
-                    gen_img = np.clip(gen_img, -1, 1)
+                    gen_img = np.clip(gen_img, -0.5, 5)
 
                     # previous accumulated neuron coverage
                     previous_coverage = self.neuron_covered(model_layer_times1)[2]
@@ -231,7 +231,7 @@ class DLFuzzer(GeneratorTemplate):
                     perturb_adversial = L2_norm / orig_L2_norm
 
                     if current_coverage - previous_coverage > 0.0001 and L2_norm < self.similarityMeasure:
-                        img_list.append(np.clip(gen_img, -1, 1))
+                        img_list.append(np.clip(gen_img, -0.5, 5))
 
                     if label1 != orig_label and L2_norm < self.similarityMeasure:
                         self.update_coverage(gen_img, model_layer_times2, threshold)
@@ -240,7 +240,7 @@ class DLFuzzer(GeneratorTemplate):
 
                         total_perturb_adversarial += perturb_adversial
 
-                        gen_img = np.clip(gen_img, -1, 1)
+                        gen_img = np.clip(gen_img, -0.5, 5)
 
                         adv_list.append(gen_img)
                         adv_labels.append(np.argmax(self.model.predict(gen_img)[0]))

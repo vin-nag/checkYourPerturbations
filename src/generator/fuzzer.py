@@ -52,7 +52,7 @@ class StepFuzzer(Fuzzer):
 
     def fuzzStep(self, image, epsilon):
         fuzzArray = np.random.randint(-1, 2, self.imageShape)
-        return np.clip((image + epsilon * fuzzArray), -1, 1)
+        return np.clip((image + epsilon * fuzzArray), -0.5, 5)
 
 
 class NormFuzzer(Fuzzer):
@@ -66,7 +66,7 @@ class NormFuzzer(Fuzzer):
         :return: np.array the fuzzed image.
         """
         fuzzArray = np.random.normal(0, epsilon, self.imageShape)
-        return np.clip((image + fuzzArray), -1, 1)
+        return np.clip((image + fuzzArray), -0.5, 5)
 
 
 class LaplaceFuzzer(Fuzzer):
@@ -80,7 +80,7 @@ class LaplaceFuzzer(Fuzzer):
         :return: np.array the fuzzed image.
         """
         fuzzArray = np.random.laplace(0, epsilon, self.imageShape)
-        return np.clip((image + fuzzArray), -1, 1)
+        return np.clip((image + fuzzArray), -0.5, 5)
 
 
 class VinFuzzer(Fuzzer):
@@ -95,8 +95,8 @@ class VinFuzzer(Fuzzer):
         :return: np.array the fuzzed image.
         """
         i = 0
-        lower = np.clip(image - epsilon, -1, 1)
-        upper = np.clip(image + epsilon, -1, 1)
+        lower = np.clip(image - epsilon, -0.5, 5)
+        upper = np.clip(image + epsilon, -0.5, 5)
         # set perturbation ranges
         lossfn = losses.categorical_crossentropy
         while i < numIters:
