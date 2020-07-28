@@ -35,7 +35,7 @@ class Fuzzer(GeneratorTemplate):
         :return: np.array representing fuzzed image.
         """
         start_time = time.time()
-        self.advImage = self.image
+        self.advImage = self.image.copy()
         epsilon = np.sqrt((self.similarityMeasure**2)/784)*0.99
         # print("sim", self.similarityMeasure, "eps", epsilon)
         while True:
@@ -43,7 +43,7 @@ class Fuzzer(GeneratorTemplate):
             if self.advLabel != self.label and areSimilar(self.image, self.advImage,
                                                           similarityMeasure=self.similarityMeasure):
                 break
-            self.advImage = self.fuzzStep(self.advImage, epsilon=epsilon)
+            self.advImage = self.fuzzStep(self.image.copy(), epsilon=epsilon)
         end_time = time.time()
         self.time = end_time - start_time
         self.completed = True
