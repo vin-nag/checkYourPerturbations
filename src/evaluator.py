@@ -50,7 +50,7 @@ class Evaluator:
                 generatorObj = self.generators[generatorName](generatorName, row['model'], row['modelName'],
                                     row['image'], row['label'], similarityType, similarityMeasure)
                 # calculate par2score
-                par2scores(generator=generatorObj, timeMax=timeMax)
+                par2scores(generator=generatorObj, timeMax=timeMax, similarityMeasure=similarityMeasure)
                 # calculate similarity score if generator provides one
                 if generatorObj.completed:
                     similarity = calculateSimilarity(row['image'], generatorObj.advImage, similarityType)
