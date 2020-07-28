@@ -230,10 +230,10 @@ class DLFuzzer(GeneratorTemplate):
 
                     perturb_adversial = L2_norm / orig_L2_norm
 
-                    if current_coverage - previous_coverage > 0.01 and L2_norm < 100:
+                    if current_coverage - previous_coverage > 0.0001 and L2_norm < self.similarityMeasure:
                         img_list.append(np.clip(gen_img, -1, 1))
 
-                    if label1 != orig_label:
+                    if label1 != orig_label and L2_norm < self.similarityMeasure:
                         self.update_coverage(gen_img, model_layer_times2, threshold)
 
                         total_norm += L2_norm

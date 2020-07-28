@@ -28,7 +28,7 @@ class Fuzzer(GeneratorTemplate):
         """ This function needs to be overridden by the classes extending Fuzzer. """
         return self.image
 
-    def generateAdversarialExample(self, epsilon=5/255):
+    def generateAdversarialExample(self):
         """
         This overrides the function from the GeneratorTemplate class.
         :param epsilon: the value of each fuzzing step.
@@ -36,6 +36,7 @@ class Fuzzer(GeneratorTemplate):
         """
         start_time = time.time()
         self.advImage = self.image
+        epsilon = np.sqrt((self.similarityMeasure**2)/784)*0.99
         while True:
             self.advLabel = np.argmax(self.model.predict(self.advImage), axis=1)[0]
             if self.advLabel != self.label and areSimilar(self.image, self.advImage):
