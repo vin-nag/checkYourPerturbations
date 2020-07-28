@@ -36,12 +36,12 @@ class Fuzzer(GeneratorTemplate):
         """
         start_time = time.time()
         self.advImage = self.image.copy()
-        epsilon = np.sqrt((self.similarityMeasure ** 2) / 784) * 0.99
+        epsilon = np.sqrt((self.similarityMeasure**2)/784)*0.99
         # print("sim", self.similarityMeasure, "eps", epsilon)
         while True:
             self.advLabel = np.argmax(self.model.predict(self.advImage), axis=1)[0]
-            if areSimilar(self.image, self.advImage,
-                          similarityMeasure=self.similarityMeasure) and self.advLabel != self.label:
+            if self.advLabel != self.label and areSimilar(self.image, self.advImage,
+                                                          similarityMeasure=self.similarityMeasure):
                 break
             self.advImage = self.fuzzStep(self.image.copy(), epsilon=epsilon)
         end_time = time.time()
