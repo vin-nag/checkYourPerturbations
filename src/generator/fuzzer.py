@@ -17,6 +17,7 @@ import tensorflow as tf
 from tensorflow.keras import utils, losses
 import numpy as np
 from src.utils import areSimilar
+import time
 
 
 class Fuzzer(GeneratorTemplate):
@@ -33,13 +34,16 @@ class Fuzzer(GeneratorTemplate):
         :param epsilon: the value of each fuzzing step.
         :return: np.array representing fuzzed image.
         """
-        fuzzImage = self.image
+        start_time = time.time()
+        self.advImage = self.image
         while True:
-            fuzzPrediction = np.argmax(self.model.predict(fuzzImage), axis=1)[0]
-            if fuzzPrediction != self.label and areSimilar(self.image, fuzzImage):
+            self.advLabel = np.argmax(self.model.predict(self.advImage), axis=1)[0]
+            if self.advLabel != self.label and areSimilar(self.image, self.advImage):
                 break
-            fuzzImage = self.fuzzStep(fuzzImage, epsilon=epsilon)
-        return fuzzImage
+            self.advImage = self.fuzzStep(self.advImage, epsilon=epsilon)
+        end_time = time.time()
+        self.time = end_time - start_time
+        self.completed = True
 
 
 class StepFuzzer(Fuzzer):

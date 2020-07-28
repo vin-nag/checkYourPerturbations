@@ -47,23 +47,23 @@ class Evaluator:
                 if verbose:
                     print(f"\tEvaluating model: {row['modelName']} for true label: {row['label']}")
                 # initialize generator object
-                generatorObj = self.generators[generatorName](generatorName, row['model'], row['image'], row['label'],
-                                                              similarityType, similarityMeasure)
+                generatorObj = self.generators[generatorName](generatorName, row['model'], row['modelName'],
+                                    row['image'], row['label'], similarityType, similarityMeasure)
                 # calculate par2score
-                timeTaken, perturbedImg, perturbedPrediction = par2scores(generator=generatorObj, timeMax=timeMax)
+                par2scores(generator=generatorObj, timeMax=timeMax)
                 # calculate similarity score if generator provides one
-                if perturbedImg is not None:
-                    similarity = calculateSimilarity(row['image'], perturbedImg, similarityType)
+                if generatorObj.completed:
+                    similarity = calculateSimilarity(row['image'], generatorObj.advImage, similarityType)
                     if verbose:
-                        print(f"\t\tResult: perturbed label: {perturbedPrediction}, time: {round(timeTaken, 4)}, "
-                              f"similarity: {round(similarity, 4)}")
-                        displayPerturbedImages(row['image'], "original", row['label'], perturbedImg, generatorName,
-                                               perturbedPrediction)
+                        print(f"\t\tResult: new label: {generatorObj.advLabel}, time: {round(generatorObj.time, 4)}, "
+                              f"similarity: {round(similarity, 4)}.")
+                        displayPerturbedImages(row['image'], "original", row['label'], generatorObj.advImage,
+                                               generatorName, generatorObj.advLabel)
                 else:
                     similarity = None
                     if verbose:
                         print(f"\t\tResult: timed out.")
                 self.results.append([generatorName, generatorObj, row['modelName'], row['image'], row['label'],
-                                     perturbedImg, perturbedPrediction, timeTaken, similarity])
+                                     generatorObj.advImage, generatorObj.advLabel, generatorObj.time, similarity])
         if verbose:
             print("Completed Evaluation.")
