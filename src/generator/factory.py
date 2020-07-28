@@ -20,11 +20,12 @@ from src.generator.cleverHans import FGSM, BIM
 
 class GeneratorTypes(Enum):
     """ This enum contains the various generators we wish to evaluate. """
-    DLFuzz = DLFuzzer
+
     StepFuzz = StepFuzzer
     NormFuzz = NormFuzzer
     LaplaceFuzz = LaplaceFuzzer
     VinFuzz = VinFuzzer
+    DLFuzz = DLFuzzer
     bim = BIM
     fgsm = FGSM
 

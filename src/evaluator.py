@@ -48,9 +48,9 @@ class Evaluator:
                     print(f"\tEvaluating model: {row['modelName']} for true label: {row['label']}")
                 # initialize generator object
                 generatorObj = self.generators[generatorName](generatorName, row['model'], row['modelName'],
-                                    row['image'], row['label'], similarityType, similarityMeasure)
+                                    row['image'].copy(), row['label'], similarityType, similarityMeasure)
                 # calculate par2score
-                print("sim", similarityMeasure)
+                print("sim", generatorObj.similarityMeasure)
                 par2scores(generator=generatorObj, timeMax=timeMax, similarityMeasure=similarityMeasure)
                 # calculate similarity score if generator provides one
                 if generatorObj.completed:
