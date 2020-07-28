@@ -69,6 +69,8 @@ def calculateSimilarity(img1, img2, similarityType="l2"):
     :param similarityType: str default: "l2"
     :return: float - distance between the images
     """
-    # img1 = normalize(img1.astype(np.float64).squeeze(), norm=similarityType, axis=1)
-    # img2 = normalize(img2.astype(np.float64).squeeze(), norm=similarityType, axis=1)
+    print("before", np.linalg.norm(img1 - img2))
+    img1 = normalize(img1.astype(np.float64).squeeze(), norm=similarityType, axis=1)
+    img2 = normalize(img2.astype(np.float64).squeeze(), norm=similarityType, axis=1)
+    print("after", np.linalg.norm(img1 - img2))
     return np.linalg.norm(img1 - img2)
