@@ -71,7 +71,7 @@ class Benchmark:
         i = 0
         for modelName in self.type:
             model = keras.models.load_model(modelName)
-            onlyModelName = modelName[modelName.rfind("/")+1:modelName.rfind(".h5")]
+            onlyModelName = modelName[modelName.rfind("/")+1:]
             for imageName, label in self.type[modelName]:
                 image = np.load(imageName)
                 self.data.loc[i] = [onlyModelName, model, image, label]
