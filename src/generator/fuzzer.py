@@ -37,6 +37,7 @@ class Fuzzer(GeneratorTemplate):
         start_time = time.time()
         self.advImage = self.image
         epsilon = np.sqrt((self.similarityMeasure**2)/784)*0.99
+        print(epsilon, self.similarityMeasure)
         while True:
             self.advLabel = np.argmax(self.model.predict(self.advImage), axis=1)[0]
             if self.advLabel != self.label and areSimilar(self.image, self.advImage):
