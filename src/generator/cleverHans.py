@@ -50,7 +50,6 @@ class CleverHansTemplate(GeneratorTemplate):
         end_time = time.time()
         self.time = end_time - start_time
         self.completed = True
-        print("reached")
 
 
 class BIM(CleverHansTemplate):

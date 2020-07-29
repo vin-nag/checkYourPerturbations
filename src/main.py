@@ -40,9 +40,9 @@ def run(args) -> None:
     """
     selector = GeneratorSelector()
     generators = selector.getAllGenerators()
-    benchmark = Benchmark(BenchmarkEnums.Demo)
-    evaluator = Evaluator(benchmark=benchmark, generators=generators)
-    evaluator.evaluate()
+    benchmark = Benchmark(BenchmarkEnums.MNISTTrustedAI)
+    evaluator = Evaluator(benchmark=benchmark, generators=generators, timeLimit=25)
+    evaluator.evaluate(display=False)
     sys.exit(0)
 
 

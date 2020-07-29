@@ -38,10 +38,11 @@ class GeneratorTemplate:
         self.similarityType = similarityType
         self.similarityMeasure = similarityMeasure
         self.imageShape = image.shape
+        self.completed = False
         self.time = None
         self.advLabel = None
         self.advImage = None
-        self.completed = False
+        self.similarity = None
 
     def generateAdversarialExample(self):
         """
