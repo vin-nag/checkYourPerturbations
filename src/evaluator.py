@@ -12,7 +12,7 @@ Authors:
     contact: vineel.nagisetty@uwaterloo.ca
 """
 
-from src.plotter import displayPerturbedImages
+from src.plotter import displayPerturbedImages, createCactusPlot
 from src.utils import calculateSimilarity
 from func_timeout import func_timeout, FunctionTimedOut
 import pandas as pd
@@ -29,8 +29,6 @@ class Evaluator:
         """
         self.benchmark = benchmark
         self.generators = generators
-        self.results = pd.DataFrame(columns=('generatorName', 'modelName', 'image', 'label',
-                                             'perturbed image', 'perturbed label', 'time', 'similarity', 'completed'))
         self.timeLimit = timeLimit
         self.similarityType = similarityType
         self.similarityMeasure = similarityMeasure
@@ -88,6 +86,9 @@ class Evaluator:
         This function performs evaluation and records par2scores and similarity measures.
         :return: None
         """
+        results = pd.DataFrame(columns=('generatorName', 'modelName', 'image', 'label',
+                                        'perturbed image', 'perturbed label', 'time', 'similarity', 'completed'))
+        i = 0
         for generatorName in self.generators:
             if self.verbose:
                 print(f"Starting evaluation for {generatorName}:")
@@ -106,8 +107,12 @@ class Evaluator:
                         displayPerturbedImages(generatorObj.image, "original", generatorObj.label,
                                                generatorObj.advImage, generatorName, generatorObj.advLabel)
 
-                self.results.append([generatorName, row['modelName'], generatorObj.image, generatorObj.label,
-                                     generatorObj.advImage, generatorObj.advLabel, generatorObj.time,
-                                     generatorObj.similarityMeasure, generatorObj.completed])
+                results.loc[i] = [generatorName, row['modelName'], generatorObj.image, generatorObj.label,
+                                  generatorObj.advImage, generatorObj.advLabel, generatorObj.time,
+                                  generatorObj.similarityMeasure, generatorObj.completed]
+                i += 1
         if self.verbose:
             print("Completed Evaluation.")
+
+        createCactusPlot(df=results)
+        return results

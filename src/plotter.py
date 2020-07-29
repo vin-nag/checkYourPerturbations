@@ -13,16 +13,46 @@ Authors:
 """
 
 import matplotlib.pyplot as plt
+import numpy as np
 
 
-def createCactusPlot(df):
+def getTimesFromDataFrame(df):
+    """
+    This function takes in a DataFrame object and returns the relevant information as a dictionary
+    :param df: Pandas.DataFrame
+    :return: dictionary
+    """
+    d = {}
+    for name in df.generatorName.unique():
+        tmp = df.loc[df['generatorName'] == name]['time']
+        lst = np.array([x for _,x in tmp.iteritems()])
+        d[name] = np.cumsum(lst)
+    return d
+
+
+def createCactusPlot(df, title="Cactus Plot of Adversarial Generators", fname=None):
     """
     This function should create a cactus plot given a dataframe.
-    :param df:
-    :return:
+    :param df: Pandas.DataFrame
+    :param title: string
+    :param fname: string
+    :return: None
     """
-    # TODO: Implement this.
-    pass
+    plt.title(title)
+    plt.xlabel("Number of Instances (#)")
+    plt.ylabel("Time Taken (seconds)")
+
+    d = getTimesFromDataFrame(df)
+
+    for key in d.keys():
+        plt.plot(d[key], label=key, marker='x')
+
+    plt.grid(False)
+    plt.legend()
+
+    if fname is not None:
+        plt.savefig(fname)
+    plt.show()
 
 
 def displayPerturbedImagesDF(df):
