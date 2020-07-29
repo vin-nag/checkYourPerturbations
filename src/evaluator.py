@@ -12,7 +12,7 @@ Authors:
     contact: vineel.nagisetty@uwaterloo.ca
 """
 
-from src.plotter import displayPerturbedImages, createCactusPlot
+from src.plotter import displayPerturbedImages, createCactusPlot, displayPerturbedImagesDF
 from src.utils import calculateSimilarity
 from func_timeout import func_timeout, FunctionTimedOut
 import pandas as pd
@@ -87,7 +87,7 @@ class Evaluator:
         :return: None
         """
         results = pd.DataFrame(columns=('generatorName', 'modelName', 'image', 'label',
-                                        'perturbed image', 'perturbed label', 'time', 'similarity', 'completed'))
+                                        'advImage', 'advLabel', 'time', 'similarity', 'completed'))
         i = 0
         for generatorName in self.generators:
             if self.verbose:
@@ -109,10 +109,11 @@ class Evaluator:
 
                 results.loc[i] = [generatorName, row['modelName'], generatorObj.image, generatorObj.label,
                                   generatorObj.advImage, generatorObj.advLabel, generatorObj.time,
-                                  generatorObj.similarityMeasure, generatorObj.completed]
+                                  generatorObj.similarity, generatorObj.completed]
                 i += 1
         if self.verbose:
             print("Completed Evaluation.")
 
-        createCactusPlot(df=results)
+        createCactusPlot(df=results, size=self.benchmark.numImages, timeout=self.timeLimit)
+        displayPerturbedImagesDF(df=results)
         return results

@@ -61,6 +61,7 @@ class Benchmark:
         self.name = benchmarkType.name
         self.type = benchmarkType.value
         self.data = pd.DataFrame(columns=['modelName', 'model', 'image', 'label'])
+        self.numImages = 0
         self.createBenchmark()
 
     def createBenchmark(self):
@@ -72,10 +73,13 @@ class Benchmark:
         for modelName in self.type:
             model = keras.models.load_model(modelName)
             onlyModelName = modelName[modelName.rfind("/")+1:]
+            j = 0
             for imageName, label in self.type[modelName]:
                 image = np.load(imageName)
                 self.data.loc[i] = [onlyModelName, model, image, label]
                 i += 1
+                j += 1
+            self.numImages = j
         print(f"Created benchmark with shape: {self.data.shape}.")
 
     def getData(self):
