@@ -115,8 +115,6 @@ class Evaluator:
             print("Completed Evaluation.")
 
         createCactusPlot(df=results, size=self.benchmark.numImages, timeout=self.timeLimit)
-        print(results.completed)
         if results.completed.isin([True]).any():
-            print('reached here')
             displayPerturbedImagesDF(df=results)
         return results

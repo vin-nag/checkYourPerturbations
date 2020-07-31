@@ -67,7 +67,7 @@ def plotEachModel(modelName, image, origLabel, lst, fname=None):
     :param: lst: List of lists
     :return: None
     """
-    fig, axs = plt.subplots(1, len(lst) + 1, figsize=(15, 5), constrained_layout=True)
+    fig, axs = plt.subplots(1, len(lst) + 1, figsize=(15, 5))
     fig.suptitle(f"Plotting Generated Adversarial Images for Model Name: {modelName}", fontsize=12)
 
     axs[0].set_xticks([])
@@ -114,7 +114,7 @@ def displayPerturbedImages(img1, name1, label1, img2, name2, label2, fname=None)
     :return: None
     """
     plt.figure(figsize=(8, 4))
-    plt.subplot(1, 2, 1, constrained_layout=True)
+    plt.subplot(1, 2, 1)
     plt.xticks([])
     plt.yticks([])
     plt.grid(False)
