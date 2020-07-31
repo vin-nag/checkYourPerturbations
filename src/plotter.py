@@ -38,7 +38,8 @@ def createCactusPlot(df, size=3, timeout=25, fname=None):
     :param fname: string
     :return: None
     """
-    plt.title(f"Cactus Plot of Adversarial Generators (Timeout: {timeout})")
+    plt.figure(figsize=(10, 10))
+    plt.title(f"Cactus Plot of Adversarial Generators (Timeout: {timeout} seconds)")
     plt.xlabel("Number of Instances (#)")
     plt.ylabel("Time Taken (seconds)")
 
@@ -57,7 +58,7 @@ def createCactusPlot(df, size=3, timeout=25, fname=None):
     plt.show()
 
 
-def plotEachModel(modelName, image, origLabel, lst):
+def plotEachModel(modelName, image, origLabel, lst, fname=None):
     """
     This function plots the generated images for each model.
     :param: modelName: string
@@ -66,8 +67,8 @@ def plotEachModel(modelName, image, origLabel, lst):
     :param: lst: List of lists
     :return: None
     """
-    fig, axs = plt.subplots(1, len(lst) + 1, figsize=(10, 4))
-    fig.suptitle(f"Plotting Generated Adversarial Images for Model Name: {modelName}", fontsize=14)
+    fig, axs = plt.subplots(1, len(lst) + 1, figsize=(15, 5), constrained_layout=True)
+    fig.suptitle(f"Plotting Generated Adversarial Images for Model Name: {modelName}", fontsize=12)
 
     axs[0].set_xticks([])
     axs[0].set_yticks([])
@@ -83,10 +84,13 @@ def plotEachModel(modelName, image, origLabel, lst):
         axs[i + 1].set_title(f"{lst[i][0]}")
         axs[i + 1].imshow(lst[i][1].squeeze(), cmap='Greys_r', vmin=-0.5, vmax=0.5)
         axs[i + 1].set_xlabel(f"label:{lst[i][2]}, sim:{round(lst[i][3], 2)}")
+
+    if fname is not None:
+        plt.savefig(fname)
     plt.show()
 
 
-def displayPerturbedImagesDF(df):
+def displayPerturbedImagesDF(df, fname=None):
     """
     This function should display the perturbed images given a dataframe.
     :param df: Pandas.DataFrame
@@ -101,7 +105,7 @@ def displayPerturbedImagesDF(df):
             for i, row in newTmp.iterrows():
                 if row['completed']:
                     lst.append([row['generatorName'], row['advImage'], row['advLabel'], row['similarity']])
-            plotEachModel(name, image, label, lst)
+            plotEachModel(name, image, label, lst, fname)
 
 
 def displayPerturbedImages(img1, name1, label1, img2, name2, label2, fname=None):
@@ -110,7 +114,7 @@ def displayPerturbedImages(img1, name1, label1, img2, name2, label2, fname=None)
     :return: None
     """
     plt.figure(figsize=(8, 4))
-    plt.subplot(1, 2, 1)
+    plt.subplot(1, 2, 1, constrained_layout=True)
     plt.xticks([])
     plt.yticks([])
     plt.grid(False)
@@ -122,7 +126,7 @@ def displayPerturbedImages(img1, name1, label1, img2, name2, label2, fname=None)
     plt.grid(False)
     plt.imshow(img2.reshape(28, 28), cmap='Greys_r', vmin=-0.5, vmax=0.5)
     plt.xlabel(label2)
-    plt.title(f"Plotting Images for {name1} (left) and {name2} (right)")
+    plt.suptitle(f"Plotting Images for {name1} (left) and {name2} (right)")
     plt.show()
 
 
