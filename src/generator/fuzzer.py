@@ -35,11 +35,13 @@ class Fuzzer(GeneratorTemplate):
         :return: np.array representing fuzzed image.
         """
         start_time = time.time()
+        i = 0
         self.advImage = self.image.copy()
         epsilon = np.sqrt((self.similarityMeasure**2)/784)*0.99
         # print("sim", self.similarityMeasure, "eps", epsilon)
         while True:
             self.advLabel = np.argmax(self.model.predict(self.advImage), axis=1)[0]
+            i += 1
             if self.advLabel != self.label and areSimilar(self.image, self.advImage,
                                                           similarityMeasure=self.similarityMeasure):
                 break
@@ -88,33 +90,28 @@ class LaplaceFuzzer(Fuzzer):
 class VinFuzzer(Fuzzer):
     """ This class extends the Fuzzer class. """
 
-    def fuzzStep(self, image, epsilon, numIters=20):
+    def __init__(self, name, model, modelName, image, label, similarityType="l2", similarityMeasure=10):
+        super().__init__(name, model, modelName, image, label, similarityType, similarityMeasure)
+        self.lowerBound = np.clip(self.image - 0.05, -0.5, 5)
+        self.upperBound = np.clip(self.image + 0.05, -0.5, 5)
+
+    def fuzzStep(self, image, epsilon):
         """
         This method overrides the function in Fuzzer class.
-        :param numIters: int the number of iterations to perform this fuzzing
         :param image: np.array of the image to fuzz
         :param epsilon: float the step size to fuzz each time
         :return: np.array the fuzzed image.
         """
-        i = 0
-        lower = np.clip(image - epsilon, -0.5, 5)
-        upper = np.clip(image + epsilon, -0.5, 5)
         # set perturbation ranges
         lossfn = losses.categorical_crossentropy
-        while i < numIters:
-            rand = np.random.random_sample(image.shape)
-            newImage = tf.convert_to_tensor(rand * (upper - lower) + lower, dtype=np.float32)
-            with tf.GradientTape() as tape:
-                tape.watch(newImage)
-                newpred = tf.squeeze(self.model(newImage))
-                loss = lossfn(newpred, utils.to_categorical(self.label, num_classes=10))
-            grad = tape.gradient(loss, newImage)
-            grad = tf.sign(grad)
-            for i in range(len(grad)):
-                for j in range(len(grad[0, 0])):
-                    for k in range(len(grad[0, 0, 0])):
-                        if grad[i, 0, j, k] == 1:
-                            lower[i, 0, j, k] = newImage[i, 0, j, k]
-                        if grad[i, 0, j, k] == -1:
-                            upper[i, 0, j, k] = newImage[i, 0, j, k]
+        rand = np.random.random_sample(image.shape)
+        newImage = tf.convert_to_tensor(rand * (self.upperBound - self.lowerBound) + self.lowerBound,
+                                        dtype=np.float32)
+        with tf.GradientTape() as tape:
+            tape.watch(newImage)
+            newpred = tf.squeeze(self.model(newImage))
+            loss = lossfn(newpred, utils.to_categorical(self.label, num_classes=10))
+        grad = tape.gradient(loss, newImage)
+        self.lowerBound = np.clip(self.lowerBound + newImage + grad, self.lowerBound, 5)
+        self.upperBound = np.clip(self.upperBound + newImage - grad, -0.5, self.upperBound)
         return newImage.numpy()

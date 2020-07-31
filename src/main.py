@@ -41,8 +41,8 @@ def run(args) -> None:
     selector = GeneratorSelector()
     generators = selector.getAllGenerators()
     benchmark = Benchmark(BenchmarkEnums.Demo)
-    evaluator = Evaluator(benchmark=benchmark, generators=generators, timeLimit=10, verbose=True)
-    evaluator.evaluate(display=True)
+    evaluator = Evaluator(benchmark=benchmark, generators=generators, timeLimit=50, verbose=True)
+    evaluator.evaluate(display=False)
     sys.exit(0)
 
 
