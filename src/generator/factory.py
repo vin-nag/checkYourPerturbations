@@ -16,6 +16,7 @@ from enum import Enum
 from src.generator.fuzzer import StepFuzzer, NormFuzzer, LaplaceFuzzer, VinFuzzer
 from src.generator.dlfuzz import DLFuzzer
 from src.generator.cleverHans import FGSM, BIM
+from src.generator.genetic import SimilarGenetic
 
 
 class GeneratorTypes(Enum):
@@ -28,6 +29,7 @@ class GeneratorTypes(Enum):
     DLFuzz = DLFuzzer
     bim = BIM
     fgsm = FGSM
+    Genetic = SimilarGenetic
 
 
 class GeneratorSelector:
