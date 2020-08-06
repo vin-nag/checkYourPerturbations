@@ -45,7 +45,7 @@ class Fuzzer(GeneratorTemplate):
             if self.advLabel != self.label and areSimilar(self.image, self.advImage,
                                                           similarityMeasure=self.similarityMeasure):
                 break
-            self.advImage = self.fuzzStep(self.image.copy(), epsilon=epsilon)
+            self.advImage = self.fuzzStep(self.advImage, epsilon=epsilon)
         end_time = time.time()
         self.time = end_time - start_time
         self.completed = True
