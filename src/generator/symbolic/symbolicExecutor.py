@@ -14,6 +14,7 @@ Authors:
 import pdb
 from src.generator.template import GeneratorTemplate
 import tensorflow as tf
+import numpy as np
 
 class SymbolicExecutioner(GeneratorTemplate):
     """ This class is the stub for our symbolic execution implementation."""
@@ -28,9 +29,8 @@ class SymbolicExecutioner(GeneratorTemplate):
             print(layer.weights)
             if len(layer.weights) == 0: continue
             else:
-                print(len(layer.weights[0].numpy()), len(layer.weights[1].numpy()))
-                self.weights.append(layer.weights[0].numpy())
-                self.biases.append(layer.weights[1].numpy())
+                self.weights.append(np.transpose(layer.weights[0].numpy()))
+                self.biases.append( np.transpose(layer.weights[1].numpy()))
     def generateAdversarialExample(self):
         """ This method needs to be implemented. TODO: Implement this method. """
         self.solve()

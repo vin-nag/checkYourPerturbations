@@ -15,17 +15,17 @@ Authors:
 from enum import Enum
 from src.generator.fuzzer import StepFuzzer, NormFuzzer, LaplaceFuzzer, VinFuzzer
 from src.generator.cleverHans import FGSM, BIM
-
+from src.generator.symbolic import ESBMC
 
 class GeneratorTypes(Enum):
     """ This enum contains the various generators we wish to evaluate. """
-    StepFuzz = StepFuzzer
-    NormFuzz = NormFuzzer
-    LaplaceFuzz = LaplaceFuzzer
-    VinFuzz = VinFuzzer
-    bim = BIM
-    fgsm = FGSM
-
+    # StepFuzz = StepFuzzer
+    # NormFuzz = NormFuzzer
+    # LaplaceFuzz = LaplaceFuzzer
+    # VinFuzz = VinFuzzer
+    # bim = BIM
+    # fgsm = FGSM
+    esbmc = ESBMC
 
 class GeneratorSelector:
     """ This class registers new generators and retrieves them. """

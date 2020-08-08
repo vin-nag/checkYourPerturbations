@@ -6,60 +6,60 @@ class ESBMC(SymbolicExecutioner):
         super().__init__(name, model, image, label, similarityType, similarityMeasure)
 
     def mk_esmbc_file(self,file):
-        n_features = self.weights[0]
+        n_features = self.weights[0].shape[1]
         with open(file, "w") as f:
             f.write("#include <math.h>\n")
             f.write("int main() {\n")
-        for i in range(len(n_features)):
-            with open(file, "a") as f:
-                f.write(f"float feature_{i} = nondet_float(); __VERIFIER_assume(feature_{i} <= 1.0 && feature_{i} >= -1.0);\n")
-
-        # RELU fully connected layers
-        for x in range(len(self.weights) - 1):
-            for i, vals in enumerate(self.weights[x]):
-                line = f"float prelayer{x + 1}_{i} = "
-                for j, val in enumerate(vals):
-                    if x != 0: 
-                        line = line + f"{val}*prelayer{x}_{j} + "
-                        line = line + f"{self.biases[x][i]})"
-                    else: line = line + f"{val}*feature_{j};\n"
+        flat_image = self.image.flatten()
+        with open(file, "a") as f:
+            for i in range(n_features):
+                f.write(f"float feature_{i} = nondet_float(); __VERIFIER_assume(feature_{i} <= 0.5f && feature_{i} >= -0.5f && fabsf(feature_{i} - {flat_image[i]}) < 0.01f);\n")
+        for it_layer in range(len(self.weights) - 1):
+            for it, weights in enumerate(self.weights[it_layer]):
+                line = f"float neuron{it_layer}_{it} = "
+                for jt, val in enumerate(weights):
+                    if it_layer == 0: 
+                        line += f"{val}f * feature_{jt} +"
+                    else:
+                        line += f"{val}f* layer{it_layer}_{it_weights} + "
+                line += f"{self.biases[it_layer][it]};\n"
                 with open(file, "a") as f:
-                    f.write(f"{line};\n")
-                with open(file, "a") as f:
-                    line = f"float layer{x + 1}_{i} = (prelayer{x + 1}_{i} + abs(prelayer{x + 1}_{i})) / 2"
-                    f.write(f"{line};\n")
+                    f.write(line)
+                    f.write(f"float layer{it_layer}_{it} = (neuron{it_layer}_{it} + fabsf(neuron{it_layer}_{it})) / 2.0f;\n")
 
         # Exponents for softmax final layer
-
-        for i, vals in enumerate(self.weights[-1]):
-            line = f"float layer{len(self.weights)}_{i} = exp("
-            for j, val in enumerate(vals):
-                line = line + f"{val}*layer{len(self.weights) - 1}_{j} + "
-                line = line + f"{self.biases[len(self.weights) - 1][j]})"
-            # print(line)
+        for it, vals in enumerate(self.weights[-1]):
+            line = f"float output_{it} = "
+            for jt, val in enumerate(vals):
+                line += f"{val}*layer{len(self.weights) - 2}_{jt} + "
+            line += f"{self.biases[len(self.weights) - 1][it]}"
             with open(file, "a") as f:
                 f.write(f"{line};\n")
 
-        # Exponent sum for softmax final layer
-        line = "float expsum ="
-        for i in range(len(self.weights[-1])):
-            line = line + f" layer{len(self.weights)}_{i} + "
-        line = line[:-2]
-        # print(line)
-        with open(file, "a") as f:
-            f.write(f"{line};\n")
+        # # Exponent sum for softmax final layer
+        # line = "float expsum ="
+        # for i in range(len(self.weights[-1])):
+        #     line = line + f" layer{len(self.weights)}_{i} + "
+        # line = line[:-2]
+        # with open(file, "a") as f:
+        #     f.write(f"{line};\n")
 
-        # Softmax calculation
-        for i in range(len(self.weights[-1])):
-            line = f"float logit{i} = layer{len(self.weights)}_{i} / expsum"
-            # print(line)
-            with open(file, "a") as f:
-                f.write(f"{line};\n")
+        # # Softmax calculation
+        # for i in range(len(self.weights[-1])):
+        #     line = f"float logit{i} = layer{len(self.weights)}_{i} / expsum"
+        #     # print(line)
+        #     with open(file, "a") as f:
+        #         f.write(f"{line};\n")
 
+        pdb.set_trace()
         with open(file, "a") as f:
-            f.write("assert(logit0 > logit1);")
+            line = 'assert('
+            for i in range(len(self.weights[-1])):
+                if i == self.label: continue
+                line += f'output_{i} > output_{self.label} ||'
+            line = line[:-2] + ');\n'
+            f.write(line)
             f.write("return 0;\n}")
     
     def solve(self):
-        pdb.set_trace()
         self.mk_esmbc_file("tmp.c")
