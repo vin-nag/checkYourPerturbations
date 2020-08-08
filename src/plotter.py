@@ -26,7 +26,7 @@ def getTimesFromDataFrame(df):
     for name in df.generatorName.unique():
         tmp = df.loc[df['generatorName'] == name]['time']
         lst = np.array([x for _, x in tmp.iteritems()])
-        d[name] = np.cumsum(lst)
+        d[name] = np.sort(lst)
     return d
 
 
@@ -48,7 +48,9 @@ def createCactusPlot(df, size=3, timeout=25, fname=None):
     plt.xticks(xAxis)
 
     for key in d.keys():
-        plt.plot(xAxis, d[key], label=key, marker='x')
+        lst = [x for x in d[key] if x < timeout]
+        size = len(lst)
+        plt.plot(xAxis[:size], lst, '^-', label=key)
 
     plt.grid(False)
     plt.legend()
