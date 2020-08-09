@@ -47,7 +47,7 @@ class Evaluator:
         try:
             generator.generateAdversarialExample()
         except Exception as e:
-            generator.time = timeLimit * 2
+            generator.time = timeLimit
             if verbose:
                 print(f"\t\tResult: Error ({e})")
 
@@ -77,7 +77,7 @@ class Evaluator:
                           f"similarity: {round(generator.similarity, 4)}.")
 
         except FunctionTimedOut:
-            generator.time = self.timeLimit * 2
+            generator.time = self.timeLimit
             if self.verbose:
                 print(f"\t\tResult: timed out.")
 
