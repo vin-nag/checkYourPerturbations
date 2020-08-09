@@ -18,7 +18,7 @@ import numpy as np
 class GeneratorTemplate:
     """ This class is a template for a Generator """
 
-    def __init__(self, name, model, image, label, similarityType="l2", similarityMeasure=10):
+    def __init__(self, name, model, modelName, image, label, similarityType="l2", similarityMeasure=10):
         """
         Standard init function
         :param name: str name of the generator
@@ -32,11 +32,17 @@ class GeneratorTemplate:
         assert pred == label, f"the label provided: {label} is not correct (model predicted: {pred})"
         self.name = name
         self.model = model
+        self.modelName = modelName
         self.image = image
         self.label = label
         self.similarityType = similarityType
         self.similarityMeasure = similarityMeasure
         self.imageShape = image.shape
+        self.completed = False
+        self.time = None
+        self.advLabel = None
+        self.advImage = None
+        self.similarity = None
 
     def generateAdversarialExample(self):
         """

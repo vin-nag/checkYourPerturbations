@@ -17,6 +17,7 @@ from cleverhans.future.tf2.attacks import fast_gradient_method, basic_iterative_
 from src.utils import areSimilar
 import tensorflow as tf
 import numpy as np
+import time
 
 
 class CleverHansTemplate(GeneratorTemplate):
@@ -32,7 +33,8 @@ class CleverHansTemplate(GeneratorTemplate):
         :param epsilon: the value of each perturbation step.
         :return: np.array representing adversarial image.
         """
-        advImage = self.image
+        start_time = time.time()
+        self.advImage = self.image
         logits_model = tf.keras.Model(self.model.input, self.model.layers[-1].output)
         if self.similarityType == "l2":
             norm = 2
@@ -41,11 +43,13 @@ class CleverHansTemplate(GeneratorTemplate):
         else:
             norm = np.inf
         while True:
-            advPrediction = np.argmax(self.model.predict(advImage), axis=1)[0]
-            if advPrediction != self.label and areSimilar(self.image, advImage.numpy()):
+            self.advLabel = np.argmax(self.model.predict(self.advImage), axis=1)[0]
+            if self.advLabel != self.label and areSimilar(self.image, self.advImage):
                 break
-            advImage = self.advStep(model_fn=logits_model, image=advImage, epsilon=epsilon, norm=norm)
-        return advImage.numpy()
+            self.advImage = self.advStep(model_fn=logits_model, image=self.advImage, epsilon=epsilon, norm=norm).numpy()
+        end_time = time.time()
+        self.time = end_time - start_time
+        self.completed = True
 
 
 class BIM(CleverHansTemplate):

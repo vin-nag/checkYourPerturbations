@@ -21,12 +21,31 @@ import pandas as pd
 
 class BenchmarkEnums(Enum):
     """ This is an enum that contains all the different benchmarks. TODO: Add new Benchmarks. """
-    Demo = {"./../src/data/models/fullyConnected.h5": [
+    Demo = {"./../src/data/models/MNIST/robust": [
         ("./../src/data/images/MNIST/nine.npy", 9),
         ("./../src/data/images/MNIST/one.npy", 1),
         ("./../src/data/images/MNIST/three.npy", 3),
         ("./../src/data/images/MNIST/seven.npy", 7)
     ]}
+
+    # Benchmark from Trusted-AI/adversarial-robustness-toolbox/blob/main/notebooks/adversarial_retraining.ipynb
+    MNISTTrustedAI = {
+        "./../src/data/models/MNIST/TrustedAI/mnist_ratio=0.h5":
+        [("./../src/data/images/MNIST/nine.npy", 9),
+         ("./../src/data/images/MNIST/one.npy", 1),
+         ("./../src/data/images/MNIST/three.npy", 3),
+         ("./../src/data/images/MNIST/seven.npy", 7)],
+        "./../src/data/models/MNIST/TrustedAI/mnist_ratio=0.5.h5":
+        [("./../src/data/images/MNIST/nine.npy", 9),
+         ("./../src/data/images/MNIST/one.npy", 1),
+         ("./../src/data/images/MNIST/three.npy", 3),
+         ("./../src/data/images/MNIST/seven.npy", 7)],
+        "./../src/data/models/MNIST/TrustedAI/mnist_ratio=1.h5":
+        [("./../src/data/images/MNIST/nine.npy", 9),
+         ("./../src/data/images/MNIST/one.npy", 1),
+         ("./../src/data/images/MNIST/three.npy", 3),
+         ("./../src/data/images/MNIST/seven.npy", 7)]
+    }
 
 
 class Benchmark:
@@ -41,7 +60,8 @@ class Benchmark:
             raise Exception(f"type: {benchmarkType} not in benchmark.")
         self.name = benchmarkType.name
         self.type = benchmarkType.value
-        self.data = pd.DataFrame(columns=['model', 'image', 'label'])
+        self.data = pd.DataFrame(columns=['modelName', 'model', 'image', 'label'])
+        self.numImages = 0
         self.createBenchmark()
 
     def createBenchmark(self):
@@ -52,10 +72,15 @@ class Benchmark:
         i = 0
         for modelName in self.type:
             model = keras.models.load_model(modelName)
+            onlyModelName = modelName[modelName.rfind("/")+1:]
+            j = 0
             for imageName, label in self.type[modelName]:
                 image = np.load(imageName)
-                self.data.loc[i] = [model, image, label]
+                self.data.loc[i] = [onlyModelName, model, image, label]
                 i += 1
+                j += 1
+            self.numImages = j
+        print(f"Created benchmark with shape: {self.data.shape}.")
 
     def getData(self):
         """

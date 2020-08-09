@@ -12,34 +12,8 @@ Authors:
     contact: vineel.nagisetty@uwaterloo.ca
 """
 
-import time
-from func_timeout import func_timeout, FunctionTimedOut
 from sklearn.preprocessing import normalize
 import numpy as np
-
-
-def par2scores(generator, timeMax, similarityType="l2", similarityMeasure=10):
-    """
-    This function calculates the par2scores for a generator.
-    :param generator: GeneratorTemplate object
-    :param timeMax: float timeout
-    :param similarityMeasure: float default: 10
-    :param similarityType: str default: "l2"
-    :return: tuple of (time taken, fuzzed image, fuzzed prediction). Note the last two elements are None if timeout.
-    """
-    try:
-        start_time = time.time()
-        # create new process to measure time taken.
-        perturbedImg = func_timeout(timeout=timeMax, func=generator.generateAdversarialExample)
-        perturbedPrediction = np.argmax(generator.model.predict(perturbedImg), axis=1)[0]
-        # verify results
-        assert generator.label != perturbedPrediction, "perturbed image label is the same as the original image."
-        assert areSimilar(perturbedImg, generator.image, similarityType, similarityMeasure), \
-            "perturbed image is not similar to original."
-        timeTaken = time.time() - start_time
-        return timeTaken, perturbedImg, perturbedPrediction
-    except FunctionTimedOut:
-        return timeMax, None, None
 
 
 def areSimilar(img1, img2, similarityType="l2", similarityMeasure=10):

@@ -14,6 +14,7 @@ Authors:
 
 from enum import Enum
 from src.generator.fuzzer import StepFuzzer, NormFuzzer, LaplaceFuzzer, VinFuzzer
+from src.generator.dlfuzz import DLFuzzer
 from src.generator.cleverHans import FGSM, BIM
 from src.generator.symbolic import ESBMC
 
