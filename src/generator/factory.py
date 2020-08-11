@@ -16,7 +16,7 @@ from enum import Enum
 from src.generator.fuzzer import StepFuzzer, NormFuzzer, LaplaceFuzzer, VinFuzzer
 from src.generator.dlfuzz import DLFuzzer
 from src.generator.cleverHans import FGSM, BIM
-from src.generator.symbolic import ESBMC
+from src.generator.symbolic import ESBMC, SMT
 
 class GeneratorTypes(Enum):
     """ This enum contains the various generators we wish to evaluate. """
@@ -26,7 +26,7 @@ class GeneratorTypes(Enum):
     # VinFuzz = VinFuzzer
     # bim = BIM
     # fgsm = FGSM
-    esbmc = ESBMC
+    smt = SMT
 
 class GeneratorSelector:
     """ This class registers new generators and retrieves them. """

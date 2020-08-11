@@ -2,8 +2,8 @@ from .symbolicExecutor import SymbolicExecutioner
 import pdb
 
 class ESBMC(SymbolicExecutioner):
-    def __init__(self, name, model, image, label, similarityType="l2", similarityMeasure=10):
-        super().__init__(name, model, image, label, similarityType, similarityMeasure)
+    def __init__(self, name, model, modelName, image, label, similarityType="l2", similarityMeasure=10):
+        super().__init__(name, model, modelName, image, label, similarityType, similarityMeasure)
 
     def mk_esmbc_file(self,file):
         n_features = self.weights[0].shape[1]
@@ -27,7 +27,7 @@ class ESBMC(SymbolicExecutioner):
                     f.write(line)
                     f.write(f"float layer{it_layer}_{it} = (neuron{it_layer}_{it} + fabsf(neuron{it_layer}_{it})) / 2.0f;\n")
 
-        # Exponents for softmax final layer
+        # Output Layer
         for it, vals in enumerate(self.weights[-1]):
             line = f"float output_{it} = "
             for jt, val in enumerate(vals):

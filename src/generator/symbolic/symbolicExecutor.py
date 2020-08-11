@@ -18,8 +18,8 @@ import numpy as np
 
 class SymbolicExecutioner(GeneratorTemplate):
     """ This class is the stub for our symbolic execution implementation."""
-    def __init__(self, name, model, image, label, similarityType="l2", similarityMeasure=10):
-        super().__init__(name, model, image, label, similarityType, similarityMeasure)
+    def __init__(self, name, model, modelName, image, label, similarityType="l2", similarityMeasure=10):
+        super().__init__(name, model, modelName, image, label, similarityType, similarityMeasure)
         self.weights = []
         self.biases = []
         self._parse_model_mlp()

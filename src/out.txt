@@ -1,0 +1,7 @@
+tmp.c: In function ‘main’:
+tmp.c:3:19: warning: implicit declaration of function ‘nondet_float’ [-Wimplicit-function-declaration]
+    3 | float feature_0 = nondet_float(); __VERIFIER_assume(feature_0 <= 1.0 && feature_0 >= -1.0 && fabsf(feature_0 - -0.5) < 0.01);
+      |                   ^~~~~~~~~~~~
+tmp.c:3:35: warning: implicit declaration of function ‘__VERIFIER_assume’ [-Wimplicit-function-declaration]
+    3 | float feature_0 = nondet_float(); __VERIFIER_assume(feature_0 <= 1.0 && feature_0 >= -1.0 && fabsf(feature_0 - -0.5) < 0.01);
+      |                                   ^~~~~~~~~~~~~~~~~
