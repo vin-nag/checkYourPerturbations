@@ -24,9 +24,8 @@ class SymbolicExecutioner(GeneratorTemplate):
         self.biases = []
         self._parse_model_mlp()
     def _parse_model_mlp(self):
-        self.model = tf.keras.models.load_model('data/models/mnist_model')
         for layer in self.model.layers:
-            print(layer.weights)
+            # print(layer.weights)
             if len(layer.weights) == 0: continue
             else:
                 self.weights.append(np.transpose(layer.weights[0].numpy()))
