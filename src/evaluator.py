@@ -21,7 +21,7 @@ import pandas as pd
 class Evaluator:
     """ This class performs the evaluation of various generators on a given benchmark. """
 
-    def __init__(self, benchmark, generators, timeLimit=25, similarityType="l2", similarityMeasure=10, verbose=True):
+    def __init__(self, benchmark, generators, timeLimit=25, verbose=True):
         """
         Standard init function.
         :param benchmark: pandas dataframe with each row consisting of <model, image, label> data.
@@ -30,8 +30,8 @@ class Evaluator:
         self.benchmark = benchmark
         self.generators = generators
         self.timeLimit = timeLimit
-        self.similarityType = similarityType
-        self.similarityMeasure = similarityMeasure
+        self.similarityType = self.benchmark.similarityType
+        self.similarityMeasure = self.benchmark.similarityMeasure
         self.verbose = verbose
 
     @staticmethod
@@ -47,7 +47,7 @@ class Evaluator:
         try:
             generator.generateAdversarialExample()
         except Exception as e:
-            generator.time = timeLimit
+            generator.time = 2 * timeLimit
             if verbose:
                 print(f"\t\tResult: Error ({e})")
 
@@ -77,7 +77,7 @@ class Evaluator:
                           f"similarity: {round(generator.similarity, 4)}.")
 
         except FunctionTimedOut:
-            generator.time = self.timeLimit
+            generator.time = 2 * self.timeLimit
             if self.verbose:
                 print(f"\t\tResult: timed out.")
 
@@ -111,10 +111,12 @@ class Evaluator:
                                   generatorObj.advImage, generatorObj.advLabel, generatorObj.time,
                                   generatorObj.similarity, generatorObj.completed]
                 i += 1
-        if self.verbose:
-            print("Completed Evaluation.")
 
         createCactusPlot(df=results, size=self.benchmark.numImages, timeout=self.timeLimit)
-        if results.completed.isin([True]).any():
+        if display and results.completed.isin([True]).any():
             displayPerturbedImagesDF(df=results)
-        return results
+
+        results.to_pickle("./../src/results/data/df.pkl")
+        if self.verbose:
+            print("Completed Evaluation.")
+        return

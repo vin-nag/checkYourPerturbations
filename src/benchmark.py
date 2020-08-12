@@ -20,38 +20,66 @@ import pandas as pd
 
 
 class BenchmarkEnums(Enum):
-    """ This is an enum that contains all the different benchmarks. TODO: Add new Benchmarks. """
-    Demo = {"./../src/data/models/MNIST/robust": [
-        ("./../src/data/images/MNIST/nine.npy", 9),
-        ("./../src/data/images/MNIST/one.npy", 1),
-        ("./../src/data/images/MNIST/three.npy", 3),
-        ("./../src/data/images/MNIST/seven.npy", 7)
-    ]}
+    """ This is an enum that contains all the different benchmarks. """
 
-    # Benchmark from Trusted-AI/adversarial-robustness-toolbox/blob/main/notebooks/adversarial_retraining.ipynb
-    MNISTTrustedAI = {
-        "./../src/data/models/MNIST/TrustedAI/mnist_ratio=0.h5":
-        [("./../src/data/images/MNIST/nine.npy", 9),
-         ("./../src/data/images/MNIST/one.npy", 1),
-         ("./../src/data/images/MNIST/three.npy", 3),
-         ("./../src/data/images/MNIST/seven.npy", 7)],
-        "./../src/data/models/MNIST/TrustedAI/mnist_ratio=0.5.h5":
-        [("./../src/data/images/MNIST/nine.npy", 9),
-         ("./../src/data/images/MNIST/one.npy", 1),
-         ("./../src/data/images/MNIST/three.npy", 3),
-         ("./../src/data/images/MNIST/seven.npy", 7)],
-        "./../src/data/models/MNIST/TrustedAI/mnist_ratio=1.h5":
-        [("./../src/data/images/MNIST/nine.npy", 9),
-         ("./../src/data/images/MNIST/one.npy", 1),
-         ("./../src/data/images/MNIST/three.npy", 3),
-         ("./../src/data/images/MNIST/seven.npy", 7)]
+    Demo = {
+        "models": ["./../src/data/models/MNIST/regularCNN"],
+        "images": "./../src/data/images/MNIST/demo.npy",
+        "similarityType": "l2",
+        "similarityMeasure": 10
+    }
+
+    MainCompact = {
+        "models": ["./../src/data/models/MNIST/regularFCNN", "./../src/data/models/MNIST/robustFCNN"],
+        "images": "./../src/data/images/MNIST/demo.npy",
+        "similarityType": "l2",
+        "similarityMeasure": 2.5
+    }
+
+    MainNormal = {
+        "models": ["./../src/data/models/MNIST/regularFCNN", "./../src/data/models/MNIST/robustFCNN"],
+        "images": "./../src/data/images/MNIST/demo.npy",
+        "similarityType": "l2",
+        "similarityMeasure": 5
+    }
+
+    MainLoose = {
+        "models": ["./../src/data/models/MNIST/regularFCNN", "./../src/data/models/MNIST/robustFCNN"],
+        "images": "./../src/data/images/MNIST/demo.npy",
+        "similarityType": "l2",
+        "similarityMeasure": 7.5
+    }
+
+    All = {
+        "models":
+            [
+                "./../src/data/models/MNIST/regularFCNN", "./../src/data/models/MNIST/robustFCNN",
+                "./../src/data/models/MNIST/regularCNN", "./../src/data/models/MNIST/robustCNN"
+             ],
+        "images": "./../src/data/images/MNIST/demo.npy",
+        "similarityType": "l2",
+        "similarityMeasure": 5
+    }
+
+    Thermometer = {
+        "models": ["./../src/data/models/MNIST/thermometerCNN"],
+        "images": "./../src/data/images/MNIST/demo.npy",
+        "similarityType": "l2",
+        "similarityMeasure": 5
+    }
+
+    CNN = {
+        "models": ["./../src/data/models/MNIST/regularCNN", "./../src/data/models/MNIST/robustCNN"],
+        "images": "./../src/data/images/MNIST/demo.npy",
+        "similarityType": "l2",
+        "similarityMeasure": 5
     }
 
 
 class Benchmark:
     """ This class contains a given benchmark. """
 
-    def __init__(self, benchmarkType):
+    def __init__(self, benchmarkType, similarityType=None, similarityMeasure=None):
         """
         Standard init function.
         :param benchmarkType: Enum that is found in BenchmarkEnums.
@@ -62,6 +90,8 @@ class Benchmark:
         self.type = benchmarkType.value
         self.data = pd.DataFrame(columns=['modelName', 'model', 'image', 'label'])
         self.numImages = 0
+        self.similarityType = self.type["similarityType"] if similarityType is None else similarityType
+        self.similarityMeasure = self.type["similarityMeasure"] if similarityMeasure is None else similarityMeasure
         self.createBenchmark()
 
     def createBenchmark(self):
@@ -70,16 +100,19 @@ class Benchmark:
         :return: None
         """
         i = 0
-        for modelName in self.type:
+        for modelName in self.type["models"]:
             model = keras.models.load_model(modelName)
             onlyModelName = modelName[modelName.rfind("/")+1:]
-            j = 0
-            for imageName, label in self.type[modelName]:
-                image = np.load(imageName)
-                self.data.loc[i] = [onlyModelName, model, image, label]
-                i += 1
-                j += 1
-            self.numImages = j
+            imageSets = self.type["images"]
+            images = np.load(imageSets, allow_pickle=True)
+            size = images.shape[0]
+            for index in range(size):
+                image, label = images[index, 0], images[index, 1]
+                pred = np.argmax(model.predict(image), axis=1)[0]
+                if pred == label:
+                    self.data.loc[i] = [onlyModelName, model, image, label]
+                    i += 1
+            self.numImages = size
         print(f"Created benchmark with shape: {self.data.shape}.")
 
     def getData(self):

@@ -59,4 +59,4 @@ def evaluateSimilarityFitness(model, image, population, label):
     y_targets = model.predict(population)[:, label]
     similarities = [calculateSimilarity(image, population[x]) for x in range(population.shape[0])]
     # fitness = prediction on true label * similarity to original image
-    return y_targets * np.array(similarities)
+    return -0.5 * y_targets + 0.5 * np.array(similarities)

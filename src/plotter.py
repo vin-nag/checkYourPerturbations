@@ -30,7 +30,7 @@ def getTimesFromDataFrame(df):
     return d
 
 
-def createCactusPlot(df, size=3, timeout=25, fname=None):
+def createCactusPlot(df, size, timeout, fname=None):
     """
     This function should create a cactus plot given a dataframe.
     :param df: Pandas.DataFrame
