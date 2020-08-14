@@ -14,8 +14,7 @@ Authors:
 """
 
 from src.generator.template import GeneratorTemplate
-from src.generator.geneticUtils import standardPixelSwapCrossover, pixelIntensityMutation, evaluateSimilarityFitness
-from src.utils import areSimilar
+from src.utils import calculateSimilarity, areSimilar
 import numpy as np
 import time
 
@@ -27,8 +26,8 @@ class Genetic(GeneratorTemplate):
     def __init__(self, name, model, modelName, image, label, similarityType="l2", similarityMeasure=10):
         super().__init__(name, model, modelName, image, label, similarityType, similarityMeasure)
         self.numGenerations = 50
-        self.populationSize = 200
-        self.mutationRate = 0.2
+        self.populationSize = 1000
+        self.mutationRate = 0.1
         self.retainBest = 0.6
         self.advImage = self.image.copy()
         self.population = self.generateInitialPopulation(self.populationSize)
@@ -81,15 +80,14 @@ class Genetic(GeneratorTemplate):
             places_left = self.populationSize - retain_len
             children = []
             while len(children) < places_left:
-                parentOne, parentTwo = np.random.randint(0, retain_len - 1, 2)
-                if parentOne != parentTwo:
-                    child1, child2 = self.crossover(parents[parentOne], parents[parentTwo])
-                    children.append(child1)
-                    if len(children) < places_left:
-                        children.append(child2)
+                parentOne, parentTwo = np.random.choice(retain_len - 1, size=2, replace=False)
+                child1, child2 = self.crossover(parents[parentOne], parents[parentTwo])
+                children.append(child1)
+                if len(children) < places_left:
+                    children.append(child2)
 
             # add the values to population
-            children = np.array(children).squeeze(1)
+            children = np.array(children)
             parents = np.append(parents, children, axis=0)
             self.population = parents
         return self.population[0]
@@ -125,25 +123,36 @@ class SimilarGenetic(Genetic):
 
     def crossover(self, parentOne, parentTwo):
         """
-        This stub function is intended to perform a cross over to produce two children given two parents. This needs to
-        be overridden.
+        This function implements a standard 2 point crossover to produce two children given two parents.
         :param parentOne: np.array representing parent one
         :param parentTwo: np.array representing parent two
         :return (np.array, np.array) representing two children
         """
-        return standardPixelSwapCrossover(parentOne, parentTwo, self.imageShape)
+        parentOneCopy = parentOne.flatten()
+        parentTwoCopy = parentTwo.flatten()
+        bounds = np.sort(np.random.choice(parentOneCopy.shape[0], size=2, replace=False))
+        child1, child2 = np.copy(parentOneCopy), np.copy(parentTwoCopy)
+        child1[bounds[0]: bounds[1]] = parentTwoCopy[bounds[0]: bounds[1]]
+        child2[bounds[0]: bounds[1]] = parentOneCopy[bounds[0]: bounds[1]]
+        return child1.reshape(self.imageShape[1:]), child2.reshape(self.imageShape[1:])
 
     def mutate(self, individual):
         """
-        This function performs the mutation for a given individual. This needs to be overridden.
+        This function performs the mutation for a given individual. It randomly selects pixels and perturbs them
         :param individual: np.array representing the image
         :return np.array representing the mutated individual
         """
-        return pixelIntensityMutation(individual, self.imageShape)
+        individual = np.expand_dims(individual, axis=0)
+        a = np.random.normal(1, 0.1, size=self.imageShape).astype('bool')
+        individual[a] = np.clip(individual[a] + np.random.randn(*individual[a].shape) * 0.1, -1, 1)
+        return individual
 
     def evaluateFitness(self):
         """
-        This function overrides from the Genetic class
+        This function overrides from the Genetic class. It calculates fitness as
         :return np.array representing the fitness scores over the population
         """
-        return evaluateSimilarityFitness(self.model, self.image, self.population, self.label)
+        yTargets = self.model.predict(self.population)[:, self.label]
+        similarityDistance = np.array([calculateSimilarity(self.image, self.population[x]) for x in
+                                 range(self.population.shape[0])])
+        return yTargets * similarityDistance
