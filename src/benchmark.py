@@ -26,39 +26,45 @@ class BenchmarkEnums(Enum):
         "models": ["./../src/data/models/MNIST/regularCNN"],
         "images": "./../src/data/images/MNIST/demo.npy",
         "similarityType": "l2",
-        "similarityMeasure": 10
+        "similarityMeasure": 10,
+        "timeLimit": 50
     }
 
-    MainCompact = {
+    MainSimilar = {
         "models": ["./../src/data/models/MNIST/regularFCNN", "./../src/data/models/MNIST/robustFCNN"],
         "images": "./../src/data/images/MNIST/demo.npy",
         "similarityType": "l2",
-        "similarityMeasure": 2.5
+        "similarityMeasure": 2.5,
+        "timeLimit": 600
     }
 
-    MainNormal = {
+    Main = {
         "models": ["./../src/data/models/MNIST/regularFCNN", "./../src/data/models/MNIST/robustFCNN"],
         "images": "./../src/data/images/MNIST/demo.npy",
         "similarityType": "l2",
-        "similarityMeasure": 5
+        "similarityMeasure": 5,
+        "timeLimit": 600
     }
 
-    MainLoose = {
+    MainDissimilar = {
         "models": ["./../src/data/models/MNIST/regularFCNN", "./../src/data/models/MNIST/robustFCNN"],
         "images": "./../src/data/images/MNIST/demo.npy",
         "similarityType": "l2",
-        "similarityMeasure": 7.5
+        "similarityMeasure": 7.5,
+        "timeLimit": 600
     }
 
     All = {
         "models":
             [
                 "./../src/data/models/MNIST/regularFCNN", "./../src/data/models/MNIST/robustFCNN",
-                "./../src/data/models/MNIST/regularCNN", "./../src/data/models/MNIST/robustCNN"
-             ],
+                "./../src/data/models/MNIST/regularCNN", "./../src/data/models/MNIST/robustCNN",
+                "./../src/data/models/MNIST/thermometerCNN"
+            ],
         "images": "./../src/data/images/MNIST/demo.npy",
         "similarityType": "l2",
-        "similarityMeasure": 5
+        "similarityMeasure": 5,
+        "timeLimit": 600
     }
 
     Thermometer = {
@@ -68,11 +74,13 @@ class BenchmarkEnums(Enum):
         "similarityMeasure": 5
     }
 
-    CNN = {
-        "models": ["./../src/data/models/MNIST/regularCNN", "./../src/data/models/MNIST/robustCNN"],
+    CNNs = {
+        "models": ["./../src/data/models/MNIST/regularCNN", "./../src/data/models/MNIST/robustCNN,"
+                                                            "./../src/data/models/MNIST/thermometerCNN"],
         "images": "./../src/data/images/MNIST/demo.npy",
         "similarityType": "l2",
-        "similarityMeasure": 5
+        "similarityMeasure": 5,
+        "timeLimit": 600
     }
 
 
@@ -90,6 +98,7 @@ class Benchmark:
         self.type = benchmarkType.value
         self.data = pd.DataFrame(columns=['modelName', 'model', 'image', 'label'])
         self.numImages = 0
+        self.timeLimit = self.type["timeLimit"]
         self.similarityType = self.type["similarityType"] if similarityType is None else similarityType
         self.similarityMeasure = self.type["similarityMeasure"] if similarityMeasure is None else similarityMeasure
         self.createBenchmark()
@@ -102,7 +111,7 @@ class Benchmark:
         i = 0
         for modelName in self.type["models"]:
             model = keras.models.load_model(modelName)
-            onlyModelName = modelName[modelName.rfind("/")+1:]
+            onlyModelName = modelName[modelName.rfind("/") + 1:]
             imageSets = self.type["images"]
             images = np.load(imageSets, allow_pickle=True)
             size = images.shape[0]

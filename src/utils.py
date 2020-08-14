@@ -13,7 +13,6 @@ Authors:
 """
 
 from sklearn.preprocessing import normalize
-import tensorflow as tf
 import numpy as np
 
 
