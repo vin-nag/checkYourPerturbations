@@ -23,7 +23,7 @@ class BenchmarkEnums(Enum):
     """ This is an enum that contains all the different benchmarks. """
 
     Demo = {
-        "models": ["./../src/data/models/MNIST/regularCNN"],
+        "models": ["./../src/data/models/MNIST/regularFCNN"],
         "images": "./../src/data/images/MNIST/demo.npy",
         "similarityType": "l2",
         "similarityMeasure": 10,
