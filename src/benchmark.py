@@ -87,7 +87,7 @@ class BenchmarkEnums(Enum):
 class Benchmark:
     """ This class contains a given benchmark. """
 
-    def __init__(self, benchmarkType, similarityType=None, similarityMeasure=None):
+    def __init__(self, benchmarkType, similarityType=None, similarityMeasure=None, verbose=True):
         """
         Standard init function.
         :param benchmarkType: Enum that is found in BenchmarkEnums.
@@ -101,6 +101,7 @@ class Benchmark:
         self.timeLimit = self.type["timeLimit"]
         self.similarityType = self.type["similarityType"] if similarityType is None else similarityType
         self.similarityMeasure = self.type["similarityMeasure"] if similarityMeasure is None else similarityMeasure
+        self.verbose = verbose
         self.createBenchmark()
 
     def createBenchmark(self):
@@ -109,9 +110,13 @@ class Benchmark:
         :return: None
         """
         i = 0
+        if self.verbose:
+            print(f"Creating benchmark: {self.name}")
         for modelName in self.type["models"]:
             model = keras.models.load_model(modelName)
             onlyModelName = modelName[modelName.rfind("/") + 1:]
+            if self.verbose:
+                print(f"Loaded model: {onlyModelName}")
             imageSets = self.type["images"]
             images = np.load(imageSets, allow_pickle=True)
             size = images.shape[0]
@@ -122,7 +127,7 @@ class Benchmark:
                     self.data.loc[i] = [onlyModelName, model, image, label]
                     i += 1
             self.numImages = size
-        print(f"Created benchmark with shape: {self.data.shape}.")
+        print(f"Created benchmark: {self.name} with shape: {self.data.shape} (with {self.numImages} images).")
 
     def getData(self):
         """

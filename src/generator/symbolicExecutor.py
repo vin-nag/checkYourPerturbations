@@ -17,8 +17,8 @@ from src.generator.template import GeneratorTemplate
 
 class SymbolicExecutioner(GeneratorTemplate):
     """ This class is the stub for our symbolic execution implementation."""
-    def __init__(self, name, model, image, label, similarityType="l2", similarityMeasure=10):
-        super().__init__(name, model, image, label, similarityType, similarityMeasure)
+    def __init__(self, name, model, image, label, similarityType="l2", similarityMeasure=10, verbose=True):
+        super().__init__(name, model, image, label, similarityType, similarityMeasure, verbose)
 
     def generateAdversarialExample(self):
         """ This method needs to be implemented. TODO: Implement this method. """

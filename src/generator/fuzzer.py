@@ -90,8 +90,8 @@ class LaplaceFuzzer(Fuzzer):
 class VinFuzzer(Fuzzer):
     """ This class extends the Fuzzer class. """
 
-    def __init__(self, name, model, modelName, image, label, similarityType="l2", similarityMeasure=10):
-        super().__init__(name, model, modelName, image, label, similarityType, similarityMeasure)
+    def __init__(self, name, model, modelName, image, label, similarityType="l2", similarityMeasure=10, verbose=True):
+        super().__init__(name, model, modelName, image, label, similarityType, similarityMeasure, verbose)
         self.lowerBound = np.clip(self.image - 0.05, -0.5, 5)
         self.upperBound = np.clip(self.image + 0.05, -0.5, 5)
 

@@ -22,10 +22,9 @@ import time
 
 class DLFuzzer(GeneratorTemplate):
 
-    def __init__(self, name, model, modelName, image, label, similarityType="l2", similarityMeasure=10):
-        super().__init__(name, model, modelName, image, label, similarityType, similarityMeasure)
+    def __init__(self, name, model, modelName, image, label, similarityType="l2", similarityMeasure=10, verbose=True):
+        super().__init__(name, model, modelName, image, label, similarityType, similarityMeasure, verbose)
         self.model_layer_weights_top_k = []
-        self.verbose = False
 
     @staticmethod
     def normalize(x):

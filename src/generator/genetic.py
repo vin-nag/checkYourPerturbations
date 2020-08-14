@@ -23,8 +23,8 @@ class Genetic(GeneratorTemplate):
     """ This class is the template of a Genetic Algorithm. It needs to be extended and the various
     functions needs to be overridden."""
 
-    def __init__(self, name, model, modelName, image, label, similarityType="l2", similarityMeasure=10):
-        super().__init__(name, model, modelName, image, label, similarityType, similarityMeasure)
+    def __init__(self, name, model, modelName, image, label, similarityType="l2", similarityMeasure=10, verbose=True):
+        super().__init__(name, model, modelName, image, label, similarityType, similarityMeasure, verbose)
         self.numGenerations = 50
         self.populationSize = 1000
         self.mutationRate = 0.1
