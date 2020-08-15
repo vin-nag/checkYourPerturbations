@@ -17,6 +17,7 @@ import tensorflow as tf
 from tensorflow.keras import utils, losses
 import numpy as np
 from src.utils import areSimilar
+from lime import lime_image
 import time
 
 
@@ -31,13 +32,12 @@ class Fuzzer(GeneratorTemplate):
     def generateAdversarialExample(self):
         """
         This overrides the function from the GeneratorTemplate class.
-        :param epsilon: the value of each fuzzing step.
         :return: np.array representing fuzzed image.
         """
         start_time = time.time()
         i = 0
         self.advImage = self.image.copy()
-        epsilon = np.sqrt((self.similarityMeasure**2)/784)*0.99
+        epsilon = np.sqrt((self.similarityMeasure ** 2) / 784) * 0.99
         # print("sim", self.similarityMeasure, "eps", epsilon)
         while True:
             self.advLabel = np.argmax(self.model.predict(self.advImage), axis=1)[0]
@@ -73,6 +73,7 @@ class NormFuzzer(Fuzzer):
         This method overrides the function in Fuzzer class.
         :param image: np.array of the image to fuzz
         :param epsilon: float the step size to fuzz each time
+        :param iters: int the number of iterations
         :return: np.array the fuzzed image.
         """
         fuzzArray = np.random.normal(0, epsilon, self.imageShape)
@@ -87,6 +88,7 @@ class LaplaceFuzzer(Fuzzer):
         This method overrides the function in Fuzzer class.
         :param image: np.array of the image to fuzz
         :param epsilon: float the step size to fuzz each time
+        :param iters: int the number of iterations
         :return: np.array the fuzzed image.
         """
         fuzzArray = np.random.laplace(0, epsilon, self.imageShape)
@@ -106,6 +108,7 @@ class VinFuzzer(Fuzzer):
         This method overrides the function in Fuzzer class.
         :param image: np.array of the image to fuzz
         :param epsilon: float the step size to fuzz each time
+        :param iters: int the number of iterations
         :return: np.array the fuzzed image.
         """
         # set perturbation ranges
@@ -126,3 +129,26 @@ class VinFuzzer(Fuzzer):
             if self.verbose:
                 print("\t\treset bounds.")
         return newImage.numpy()
+
+
+class XAIFuzzer(Fuzzer):
+    """ This class extends the Fuzzer class. """
+
+    def __init__(self, name, model, modelName, image, label, similarityType="l2", similarityMeasure=10, verbose=True):
+        super().__init__(name, model, modelName, image, label, similarityType, similarityMeasure, verbose)
+        explainer = lime_image.LimeImageExplainer()
+        logits_model = tf.keras.Model(self.model.input, self.model.layers[-1].output)
+        self.explanationMask = explainer.explain_instance(image.squeeze(), logits_model, top_labels=1, hide_color=0,
+                                                          num_samples=100).get_image_and_mask(label)[1]
+        self.explanationMask = np.expand_dims(np.expand_dims(self.explanationMask, 0), 3)
+
+    def fuzzStep(self, image, epsilon, iters):
+        """
+        This method overrides the function in Fuzzer class.
+        :param image: np.array of the image to fuzz
+        :param epsilon: float the step size to fuzz each time
+        :param iters: int the number of iterations
+        :return: np.array the fuzzed image.
+        """
+        fuzzArray = np.random.normal(0, epsilon, self.imageShape)
+        return np.clip((self.explanationMask * fuzzArray * epsilon), -1, 1)

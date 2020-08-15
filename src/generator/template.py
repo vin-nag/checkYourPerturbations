@@ -18,7 +18,7 @@ import numpy as np
 class GeneratorTemplate:
     """ This class is a template for a Generator """
 
-    def __init__(self, name, model, modelName, image, label, similarityType="l2", similarityMeasure=10, verbose=True):
+    def __init__(self, name, model, modelName, image, label, similarityType="l2", similarityMeasure=10, verbose=False):
         """
         Standard init function
         :param name: str name of the generator

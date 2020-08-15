@@ -12,16 +12,17 @@ Authors:
     contact: vineel.nagisetty@uwaterloo.ca
 """
 
-from src.plotter import displayPerturbedImages, createCactusPlot, displayPerturbedImagesDF
-from src.utils import calculateSimilarity
+from src.utils import calculateSimilarity, saveDF
 from func_timeout import func_timeout, FunctionTimedOut
 import pandas as pd
+from datetime import date
+from tqdm import tqdm
 
 
 class Evaluator:
     """ This class performs the evaluation of various generators on a given benchmark. """
 
-    def __init__(self, benchmark, generators, timeLimit=25, verbose=True):
+    def __init__(self, benchmark, generators, timeLimit=25, verbose=False):
         """
         Standard init function.
         :param benchmark: pandas dataframe with each row consisting of <model, image, label> data.
@@ -33,12 +34,15 @@ class Evaluator:
         self.similarityType = self.benchmark.similarityType
         self.similarityMeasure = self.benchmark.similarityMeasure
         self.verbose = verbose
+        self.date = date.today().strftime("%b-%d-%Y")
 
     @staticmethod
     def runGenerator(generator, timeLimit=25, verbose=False):
         """
         This wrapper function runs the generateAdversarialExample on each generator
         :param generator: GeneratorTemplate object
+        :param timeLimit: float time limit
+        :param verbose: bool whether to display debug statements
         """
         # adding thread scope value so that keras works
         import keras.backend.tensorflow_backend as tb
@@ -55,10 +59,6 @@ class Evaluator:
         """
         This function calculates the par2scores for a generator.
         :param generator: GeneratorTemplate object
-        :param timeMax: float timeout
-        :param similarityLimit: float default: 10
-        :param similarityType: str default: "l2"
-        :param verbose: bool default: true
         :return: tuple of (time taken, fuzzed image, fuzzed prediction). Note the last two elements are None if timeout.
         """
         # create new process to measure time taken.
@@ -73,50 +73,46 @@ class Evaluator:
                 assert generator.similarity < self.similarityMeasure, "perturbed image is not similar to original."
 
                 if self.verbose:
-                    print(f"\t\tResult: new label: {generator.advLabel}, time: {round(generator.time, 4)}, "
-                          f"similarity: {round(generator.similarity, 4)}.")
+                    tqdm.write(f"\t\tResult: new label: {generator.advLabel}, time: {round(generator.time, 4)}, "
+                               f"similarity: {round(generator.similarity, 4)}.")
 
         except FunctionTimedOut:
             generator.time = 2 * self.timeLimit
+            generator.similarity = 2 * self.similarityMeasure
             if self.verbose:
-                print(f"\t\tResult: timed out.")
+                tqdm.write(f"\t\tResult: timed out.")
 
-    def evaluate(self, display=False):
+    def evaluate(self):
         """
         This function performs evaluation and records par2scores and similarity measures.
         :return: None
         """
-        results = pd.DataFrame(columns=('generatorName', 'modelName', 'image', 'label',
-                                        'advImage', 'advLabel', 'time', 'similarity', 'completed'))
         i = 0
-        for generatorName in self.generators:
-            if self.verbose:
-                print(f"Starting evaluation for {generatorName}:")
-            for index, row in self.benchmark.getData().iterrows():
-                if self.verbose:
-                    print(f"\tEvaluating model: {row['modelName']} for true label: {row['label']}")
-                # initialize generator object
-                generatorObj = self.generators[generatorName](name=generatorName, model=row['model'],
-                                                              modelName=row['modelName'], image=row['image'].copy(),
-                                                              label=row['label'], similarityType=self.similarityType,
-                                                              similarityMeasure=self.similarityMeasure)
-                # run evaluation on each generator
-                self.evaluateEach(generator=generatorObj)
-                if display:
-                    if generatorObj.completed:
-                        displayPerturbedImages(generatorObj.image, "original", generatorObj.label,
-                                               generatorObj.advImage, generatorName, generatorObj.advLabel)
+        with tqdm(total=self.benchmark.data.shape[0] * len(self.generators)) as progressBar:
+            for generatorName in self.generators:
+                results = pd.DataFrame(columns=('generatorName', 'modelName', 'image', 'label',
+                                                'advImage', 'advLabel', 'time', 'similarity', 'completed'))
+                for index, row in self.benchmark.getData().iterrows():
+                    progressBar.set_description(f"\tEvaluating generator: {generatorName} on model: {row['modelName']} "
+                                                f"for true label: {row['label']}")
+                    # initialize generator object
+                    generatorObj = self.generators[generatorName](name=generatorName, model=row['model'],
+                                                                  modelName=row['modelName'], image=row['image'].copy(),
+                                                                  label=row['label'],
+                                                                  similarityType=self.similarityType,
+                                                                  similarityMeasure=self.similarityMeasure,
+                                                                  verbose=self.verbose)
+                    # run evaluation on each generator
+                    self.evaluateEach(generator=generatorObj)
 
-                results.loc[i] = [generatorName, row['modelName'], generatorObj.image, generatorObj.label,
-                                  generatorObj.advImage, generatorObj.advLabel, generatorObj.time,
-                                  generatorObj.similarity, generatorObj.completed]
-                i += 1
+                    results.loc[i] = [generatorName, row['modelName'], generatorObj.image, generatorObj.label,
+                                      generatorObj.advImage, generatorObj.advLabel, generatorObj.time,
+                                      generatorObj.similarity, generatorObj.completed]
+                    i += 1
+                    progressBar.update()
 
-        createCactusPlot(df=results, size=self.benchmark.numImages, timeout=self.timeLimit)
-        if display and results.completed.isin([True]).any():
-            displayPerturbedImagesDF(df=results)
+                saveDF(f"./../src/results/data/{self.benchmark.name}/{self.date}/", f"{generatorName}.pkl", results)
 
-        results.to_pickle("./../src/results/data/df.pkl")
         if self.verbose:
             print("Completed Evaluation.")
         return

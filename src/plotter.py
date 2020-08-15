@@ -12,8 +12,28 @@ Authors:
     contact: vineel.nagisetty@uwaterloo.ca
 """
 
+from prettytable import PrettyTable
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
+import argparse
+import sys
+import os
+
+
+def getSimilaritiesFromDataFrame(df, similarityLimit=10):
+    """
+    This function takes in a DataFrame object and returns the relevant information as a dictionary
+    :param df: Pandas.DataFrame
+    :param similarityLimit int the similarity limit of the benchmark
+    :return: dictionary
+    """
+    d = {}
+    for name in df.generatorName.unique():
+        tmp = df.loc[df['generatorName'] == name]['similarity']
+        lst = np.array([x if x is not None else 2 * similarityLimit for _, x in tmp.iteritems()])
+        d[name] = np.sort(lst)
+    return d
 
 
 def getTimesFromDataFrame(df):
@@ -30,11 +50,18 @@ def getTimesFromDataFrame(df):
     return d
 
 
-def createCactusPlot(df, size, timeout, fname=None):
+def printPar2Scores(d1, d2):
+    table = PrettyTable(['Generator', 'Time (seconds)', 'Similarity Score (l2 distance)'])
+    for key in d1.keys():
+        table.add_row([key, round(sum(d1[key]), 4), round(sum(d2[key]), 4)])
+    print(table)
+
+
+def createCactusPlot(d, timeout, fname=None):
     """
     This function should create a cactus plot given a dataframe.
-    :param df: Pandas.DataFrame
-    :param title: string
+    :param d: dictionary
+    :param timeout: int
     :param fname: string
     :return: None
     """
@@ -43,14 +70,12 @@ def createCactusPlot(df, size, timeout, fname=None):
     plt.xlabel("Number of Instances (#)")
     plt.ylabel("Time Taken (seconds)")
 
-    d = getTimesFromDataFrame(df)
-    xAxis = [x for x in range(1, size+1)]
-    plt.xticks(xAxis)
-
     for key in d.keys():
         lst = [x for x in d[key] if x < timeout]
         size = len(lst)
-        plt.plot(xAxis[:size], lst, '^-', label=key)
+        xAxis = [x for x in range(1, size+1)]
+        plt.xticks(xAxis)
+        plt.plot(xAxis, lst, '^-', label=key)
 
     plt.grid(False)
     plt.legend()
@@ -96,6 +121,7 @@ def displayPerturbedImagesDF(df, fname=None):
     """
     This function should display the perturbed images given a dataframe.
     :param df: Pandas.DataFrame
+    :param fname: str name of the file to save
     :return:
     """
     for name in df.modelName.unique():
@@ -110,7 +136,7 @@ def displayPerturbedImagesDF(df, fname=None):
             plotEachModel(name, image, label, lst, fname)
 
 
-def displayPerturbedImages(img1, name1, label1, img2, name2, label2, fname=None):
+def displayPerturbedImages(img1, name1, label1, img2, name2, label2):
     """
     This function should display the perturbed images given some details.
     :return: None
@@ -143,3 +169,38 @@ def plotImage(img):
     plt.imshow(img)
     plt.title(f"Plotting Image")
     plt.show()
+
+
+def plotResults(args):
+    inputFolder = args.input
+
+    df = pd.DataFrame()
+    for filename in os.listdir(inputFolder):
+        data = pd.read_pickle(inputFolder+filename)
+        df = df.append(data)
+
+    d = getTimesFromDataFrame(df)
+    d2 = getSimilaritiesFromDataFrame(df)
+    createCactusPlot(d, args.timeout, args.output)
+    printPar2Scores(d, d2)
+    sys.exit(0)
+
+
+def main():
+    """
+    The main function that parses arguments
+    :return: None
+    """
+    parser = argparse.ArgumentParser(description="Plot results of an evaluation.")
+    parser.add_argument("-i", "--input", help="Input folder where the dataframes are saved during evaluation.")
+    parser.add_argument("-o", "--output", help="Output filename to save the cactus plot.")
+    parser.add_argument("-t", "--timeout", help="Timeout of that evaluation.", type=int)
+    try:
+        args = parser.parse_args()
+        plotResults(args)
+    except Exception as e:
+        print(sys.stderr, e)
+
+
+if __name__ == "__main__":
+    main()

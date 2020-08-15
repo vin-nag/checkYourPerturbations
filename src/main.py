@@ -14,6 +14,7 @@ Authors:
 
 import argparse
 import sys
+[sys.path.append(i) for i in ['.', '..']]
 from src.generator.factory import GeneratorSelector
 from src.benchmark import BenchmarkEnums, Benchmark
 from src.evaluator import Evaluator
@@ -25,6 +26,8 @@ def main():
     :return: None
     """
     parser = argparse.ArgumentParser(description="Evaluate adversarial example generators on a given benchmark.")
+    parser.add_argument('--benchmark', type=BenchmarkEnums, default=BenchmarkEnums.Main)
+    parser.add_argument('--verbose', action='store_true', default=False)
     try:
         args = parser.parse_args()
         run(args)
@@ -40,11 +43,12 @@ def run(args) -> None:
     """
     selector = GeneratorSelector()
     generators = selector.getAllGenerators()
-    benchmark = Benchmark(BenchmarkEnums.Demo)
-    evaluator = Evaluator(benchmark=benchmark, generators=generators, timeLimit=benchmark.timeLimit, verbose=True)
-    evaluator.evaluate(display=False)
+    benchmark = Benchmark(args.benchmark)
+    evaluator = Evaluator(benchmark=benchmark, generators=generators, timeLimit=benchmark.timeLimit,
+                          verbose=args.verbose)
+    evaluator.evaluate()
     sys.exit(0)
 
 
 if __name__ == "__main__":
-    run(None)
+    main()

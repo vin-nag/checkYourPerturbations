@@ -14,6 +14,7 @@ Authors:
 
 from sklearn.preprocessing import normalize
 import numpy as np
+import os
 
 
 def areSimilar(img1, img2, similarityType="l2", similarityMeasure=10):
@@ -30,7 +31,7 @@ def areSimilar(img1, img2, similarityType="l2", similarityMeasure=10):
 
 def calculateSimilarity(img1, img2, similarityType="l2"):
     """
-    This method calculates the similarity of two images given the type of similariy function (such as l2 distance).
+    This method calculates the similarity of two images given the type of similarity function (such as l2 distance).
     :param img1: np.array
     :param img2: np.array
     :param similarityType: str default: "l2"
@@ -39,3 +40,12 @@ def calculateSimilarity(img1, img2, similarityType="l2"):
     img1 = normalize(img1.astype(np.float64).squeeze(), norm=similarityType, axis=1)
     img2 = normalize(img2.astype(np.float64).squeeze(), norm=similarityType, axis=1)
     return np.linalg.norm(img1 - img2)
+
+
+def saveDF(folder, fname, df):
+    """
+    This method saves a dataframe to the respective folder
+    """
+    if not os.path.exists(folder):
+        os.makedirs(folder)
+    df.to_pickle(folder+fname)

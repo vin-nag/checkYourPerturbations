@@ -83,11 +83,14 @@ class BenchmarkEnums(Enum):
         "timeLimit": 600
     }
 
+    def __str__(self):
+        return self.value
+
 
 class Benchmark:
     """ This class contains a given benchmark. """
 
-    def __init__(self, benchmarkType, similarityType=None, similarityMeasure=None, verbose=True):
+    def __init__(self, benchmarkType, similarityType=None, similarityMeasure=None, verbose=False):
         """
         Standard init function.
         :param benchmarkType: Enum that is found in BenchmarkEnums.
@@ -126,8 +129,8 @@ class Benchmark:
                 if pred == label:
                     self.data.loc[i] = [onlyModelName, model, image, label]
                     i += 1
-            self.numImages = size
-        print(f"Created benchmark: {self.name} with shape: {self.data.shape} (with {self.numImages} images).")
+            self.numImages = i
+        print(f"Created benchmark: {self.name} with shape: {self.data.shape}.")
 
     def getData(self):
         """
