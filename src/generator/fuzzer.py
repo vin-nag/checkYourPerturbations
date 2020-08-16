@@ -151,4 +151,4 @@ class XAIFuzzer(Fuzzer):
         :return: np.array the fuzzed image.
         """
         fuzzArray = np.random.normal(0, epsilon, self.imageShape)
-        return np.clip((self.explanationMask * fuzzArray * epsilon), -1, 1)
+        return np.clip(image + (self.explanationMask * fuzzArray), -1, 1)

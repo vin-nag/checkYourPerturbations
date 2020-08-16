@@ -22,16 +22,16 @@ from src.generator.genetic import SimilarGenetic
 class GeneratorTypes(Enum):
     """ This enum contains the various generators we wish to evaluate. """
 
-    StepFuzz = StepFuzzer
-    LaplaceFuzz = LaplaceFuzzer
-    VinFuzz = VinFuzzer
-    DLFuzz = DLFuzzer
+    #StepFuzz = StepFuzzer
+    #LaplaceFuzz = LaplaceFuzzer
+    #VinFuzz = VinFuzzer
+    #DLFuzz = DLFuzzer
     XAIFuzz = XAIFuzzer
-    FastGradientSignMethod = FGSM
-    BasicIterativeMethod = BIM
-    CarliniWagner = CW
-    MadryEtAll = Madry
-    GeneticAlgorithm = SimilarGenetic
+    #FastGradientSignMethod = FGSM
+    #BasicIterativeMethod = BIM
+    #CarliniWagner = CW
+    #MadryEtAll = Madry
+    #GeneticAlgorithm = SimilarGenetic
 
 
 class GeneratorSelector:
