@@ -66,16 +66,14 @@ def createCactusPlot(d, timeout, fname=None):
     :return: None
     """
     plt.figure(figsize=(10, 10))
-    plt.title(f"Cactus Plot of Adversarial Generators (Timeout: {timeout} seconds)")
+    # plt.title(f"Cactus Plot of Adversarial Generators (Timeout: {timeout} seconds)")
     plt.xlabel("Number of Instances (#)")
     plt.ylabel("Time Taken (seconds)")
 
     for key in d.keys():
         lst = [x for x in d[key] if x < timeout]
         size = len(lst)
-        xAxis = [x for x in range(1, size+1)]
-        plt.xticks(xAxis)
-        plt.plot(xAxis, lst, '^-', label=key)
+        plt.plot(lst, '^-', label=key)
 
     plt.grid(False)
     plt.legend()
