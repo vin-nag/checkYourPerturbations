@@ -53,7 +53,7 @@ class Evaluator:
         except Exception as e:
             generator.time = 2 * timeLimit
             if verbose:
-                print(f"\t\tResult: Error ({e})")
+                print(f"\t\tResult: {generator.name} Error ({e})")
 
     def evaluateEach(self, generator):
         """
