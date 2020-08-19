@@ -23,44 +23,23 @@ class BenchmarkEnums(Enum):
     """ This is an enum that contains all the different benchmarks. """
 
     Demo = {
-        "models": ["./../src/data/models/MNIST/regularFCNN"],
+        "models": ["./../src/data/models/MNIST/regularCNN"],
         "images": "./../src/data/images/MNIST/demo.npy",
         "similarityType": "l2",
         "similarityMeasure": 10,
         "timeLimit": 50
     }
 
-    MainSimilar = {
-        "models": ["./../src/data/models/MNIST/regularFCNN", "./../src/data/models/MNIST/robustFCNN"],
-        "images": "./../src/data/images/MNIST/demo.npy",
-        "similarityType": "l2",
-        "similarityMeasure": 2.5,
-        "timeLimit": 600
-    }
-
     Main = {
         "models": ["./../src/data/models/MNIST/regularFCNN", "./../src/data/models/MNIST/robustFCNN"],
         "images": "./../src/data/images/MNIST/demo.npy",
         "similarityType": "l2",
-        "similarityMeasure": 5,
+        "similarityMeasure": 10,
         "timeLimit": 600
     }
 
-    MainDissimilar = {
+    MainSimilar = {
         "models": ["./../src/data/models/MNIST/regularFCNN", "./../src/data/models/MNIST/robustFCNN"],
-        "images": "./../src/data/images/MNIST/demo.npy",
-        "similarityType": "l2",
-        "similarityMeasure": 7.5,
-        "timeLimit": 600
-    }
-
-    All = {
-        "models":
-            [
-                "./../src/data/models/MNIST/regularFCNN", "./../src/data/models/MNIST/robustFCNN",
-                "./../src/data/models/MNIST/regularCNN", "./../src/data/models/MNIST/robustCNN",
-                "./../src/data/models/MNIST/thermometerCNN"
-            ],
         "images": "./../src/data/images/MNIST/demo.npy",
         "similarityType": "l2",
         "similarityMeasure": 5,
@@ -71,15 +50,15 @@ class BenchmarkEnums(Enum):
         "models": ["./../src/data/models/MNIST/thermometerCNN"],
         "images": "./../src/data/images/MNIST/demo.npy",
         "similarityType": "l2",
-        "similarityMeasure": 5
+        "similarityMeasure": 10,
+        "timeLimit": 600
     }
 
-    CNNs = {
-        "models": ["./../src/data/models/MNIST/regularCNN", "./../src/data/models/MNIST/robustCNN,"
-                                                            "./../src/data/models/MNIST/thermometerCNN"],
+    MainCNN = {
+        "models": ["./../src/data/models/MNIST/regularCNN", "./../src/data/models/MNIST/robustCNN"],
         "images": "./../src/data/images/MNIST/demo.npy",
         "similarityType": "l2",
-        "similarityMeasure": 5,
+        "similarityMeasure": 10,
         "timeLimit": 600
     }
 
