@@ -45,7 +45,7 @@ class Fuzzer(GeneratorTemplate):
             if self.advLabel != self.label and areSimilar(self.image, self.advImage,
                                                           similarityMeasure=self.similarityMeasure):
                 break
-            if i > 500:
+            if i > 5000:
                 self.advImage = self.image.copy()
                 if self.verbose:
                     print("\t\treset image")
@@ -138,7 +138,7 @@ class XAIFuzzer(Fuzzer):
         super().__init__(name, model, modelName, image, label, similarityType, similarityMeasure, verbose)
         explainer = lime_image.LimeImageExplainer()
         logits_model = tf.keras.Model(self.model.input, self.model.layers[-1].output)
-        self.explanationMask = explainer.explain_instance(image.squeeze(), logits_model, top_labels=1, hide_color=0,
+        self.explanationMask = explainer.explain_instance(image.squeeze(), logits_model, top_labels=1, hide_color=1,
                                                           num_samples=100).get_image_and_mask(label)[1]
         self.explanationMask = np.expand_dims(np.expand_dims(self.explanationMask, 0), 3)
 
