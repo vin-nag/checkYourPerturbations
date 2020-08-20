@@ -55,7 +55,7 @@ class BenchmarkEnums(Enum):
     }
 
     MainCNN = {
-        "models": ["./../src/data/models/MNIST/regularCNN", "./../src/data/models/MNIST/robustCNN"],
+        "models": ["./../src/data/models/MNIST/regularCNN.h5", "./../src/data/models/MNIST/robustCNN.h5"],
         "images": "./../src/data/images/MNIST/demo.npy",
         "similarityType": "l2",
         "similarityMeasure": 10,
