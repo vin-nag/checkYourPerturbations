@@ -16,9 +16,12 @@ You are free to clone, run and modify this file as you see fit.
 The code of the project is found in the `/src/` directory and run using the main.py file. 
 
 ### Reproduce Results
-To reproduce the results (except for the Carlini Wagner attack), clone the latest version of cleverhans`git clone https://github.com/tensorflow/cleverhans` and then run main.py.
+To reproduce the results, clone the latest version of cleverhans and follow these steps:
+1. `git clone https://github.com/tensorflow/cleverhans`
+2. `python3 main.py`
+3. `python3 plotter.py -i ./results/data/{Benchmark Name}/{Date} -o {location to save cactus plot} -t <time out limit>
 
-Please note that you would need to install tensorflow 2.2.0 to run these files. The full details are found in `requirements.txt`. 
+Please note that you would need to install tensorflow 2.2.0 to run these files. The full requirements are found in `requirements.txt`. 
 
 ## Report
 The final report for this project is found [here](https://github.com/vin-nag/checkYourPerturbations/blob/master/documentation/ECE653_Project%20(5).pdf).
