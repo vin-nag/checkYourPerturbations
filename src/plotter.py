@@ -93,7 +93,6 @@ def plotEachModel(modelName, image, origLabel, lst, fname=None):
     :return: None
     """
     fig, axs = plt.subplots(1, len(lst) + 1, figsize=(15, 5))
-    fig.suptitle(f"Plotting Generated Adversarial Images for Model Name: {modelName}", fontsize=12)
 
     axs[0].set_xticks([])
     axs[0].set_yticks([])
@@ -108,7 +107,7 @@ def plotEachModel(modelName, image, origLabel, lst, fname=None):
         axs[i + 1].grid(False)
         axs[i + 1].set_title(f"{lst[i][0]}")
         axs[i + 1].imshow(lst[i][1].squeeze(), cmap='Greys_r', vmin=-0.5, vmax=0.5)
-        axs[i + 1].set_xlabel(f"label:{lst[i][2]}, sim:{round(lst[i][3], 2)}")
+        axs[i + 1].set_xlabel(f"label:{lst[i][2]}")
 
     if fname is not None:
         plt.savefig(fname)
@@ -122,16 +121,14 @@ def displayPerturbedImagesDF(df, fname=None):
     :param fname: str name of the file to save
     :return:
     """
-    for name in df.modelName.unique():
-        tmp = df[df['modelName'] == name]
-        for label in tmp.label.unique():
-            lst = []
-            newTmp = tmp[tmp['label'] == label]
-            image = newTmp.iloc[0]['image']
-            for i, row in newTmp.iterrows():
-                if row['completed']:
-                    lst.append([row['generatorName'], row['advImage'], row['advLabel'], row['similarity']])
-            plotEachModel(name, image, label, lst, fname)
+    for label in df.label.unique():
+        lst = []
+        newTmp = df[df['label'] == label]
+        image = newTmp.iloc[0]['image']
+        for i, row in newTmp.iterrows():
+            if row['completed']:
+                lst.append([row['generatorName'], row['advImage'], row['advLabel'], row['similarity']])
+        plotEachModel("name", image, label, lst, fname)
 
 
 def displayPerturbedImages(img1, name1, label1, img2, name2, label2):
@@ -181,6 +178,7 @@ def plotResults(args):
     d2 = getSimilaritiesFromDataFrame(df)
     createCactusPlot(d, args.timeout, args.output)
     printPar2Scores(d, d2)
+    displayPerturbedImagesDF(df, fname="display.png")
     sys.exit(0)
 
 

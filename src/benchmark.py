@@ -51,7 +51,7 @@ class BenchmarkEnums(Enum):
         "images": "./../src/data/images/MNIST/demo.npy",
         "similarityType": "l2",
         "similarityMeasure": 10,
-        "timeLimit": 600
+        "timeLimit": 50
     }
 
     MainCNN = {
@@ -84,7 +84,7 @@ class Benchmark:
         self.similarityType = self.type["similarityType"] if similarityType is None else similarityType
         self.similarityMeasure = self.type["similarityMeasure"] if similarityMeasure is None else similarityMeasure
         self.verbose = verbose
-        self.createBenchmark()
+        self.createBenchmarkOne()
 
     def createBenchmark(self):
         """

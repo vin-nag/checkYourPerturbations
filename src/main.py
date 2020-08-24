@@ -43,7 +43,7 @@ def run(args) -> None:
     """
     selector = GeneratorSelector()
     generators = selector.getAllGenerators()
-    benchmark = Benchmark(args.benchmark)
+    benchmark = Benchmark(benchmarkType=args.benchmark, verbose=args.verbose)
     evaluator = Evaluator(benchmark=benchmark, generators=generators, timeLimit=benchmark.timeLimit,
                           verbose=args.verbose)
     evaluator.evaluate()
