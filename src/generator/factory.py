@@ -15,7 +15,7 @@ Authors:
 from enum import Enum
 from src.generator.fuzzer import StepFuzzer, LaplaceFuzzer, VinFuzzer, XAIFuzzer
 from src.generator.dlfuzz import DLFuzzer
-from src.generator.cleverHans import FGSM, BIM, CW, Madry
+from src.generator.cleverHans import FGSM, BIM, Madry
 from src.generator.genetic import SimilarGenetic
 
 
@@ -23,7 +23,6 @@ class GeneratorTypes(Enum):
     """ This enum contains the various generators we wish to evaluate. """
     fgsm = FGSM
     bim = BIM
-    cw = CW
     madry = Madry
     step = StepFuzzer
     laplace = LaplaceFuzzer
