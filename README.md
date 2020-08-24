@@ -24,5 +24,5 @@ To reproduce the results, clone the latest version of cleverhans and follow thes
 Please note that you would need to install tensorflow 2.2.0 to run these files. The full requirements are found in `requirements.txt`. 
 
 ## Report
-The final report for this project is found [here](https://github.com/vin-nag/checkYourPerturbations/blob/master/documentation/ECE653_Project%20(5).pdf).
+The final report for this project is found [here](https://github.com/vin-nag/checkYourPerturbations/blob/master/documentation/project_proposal.pdf).
 
