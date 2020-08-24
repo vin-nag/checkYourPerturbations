@@ -19,7 +19,7 @@ The code of the project is found in the `/src/` directory and run using the main
 To reproduce the results, clone the latest version of cleverhans and follow these steps:
 1. `git clone https://github.com/tensorflow/cleverhans`
 2. `python3 main.py`
-3. `python3 plotter.py -i ./results/data/{Benchmark Name}/{Date} -o {location to save cactus plot} -t <time out limit>
+3. `python3 plotter.py -i ./results/data/{Benchmark Name}/{Date} -o {location to save cactus plot} -t <time out limit>`
 
 Please note that you would need to install tensorflow 2.2.0 to run these files. The full requirements are found in `requirements.txt`. 
 
