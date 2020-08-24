@@ -1,6 +1,25 @@
 # Check Your Perturbations
 ## By Laura Graves, Vineel Nagisetty, and Joseph Scott
-A tool to compare various adversarial example generation methods.
-Completed as final project for ECE 653 course at University of Waterloo.
 
-### 
+## Table of Contents
+* Introduction
+* Usage
+* Report
+
+## Introduction
+Adversarial examples are specifically crafted inputs that are able to cause a neural network to misclassify them. The challenge in creating these examples is that simple gradient descent is often defeated by defense methods. In this work we propose a suite of non-gradient-based methods for creating adversarial examples, including methods based on fuzzing, genetic algorithms, and symbolic execution and compare them with gradient based fuzzers. We find that, while gradient descent outperforms other methods when attacking undefended fully connected models, the non-gradient methods outperform it against convolutional models. This shows promise for finding adversarial examples against defended models as well as highlights the insufficiency of current defense methods, showing the need for greater research into non-gradient based defenses. This is done as part of the final project for University of Waterloo's ECE 653: Testing, Quality Assurance, and Maintenance course.
+
+## Usage
+You are free to clone, run and modify this file as you see fit. 
+
+### Source Code
+The code of the project is found in the `/src/` directory and run using the main.py file. 
+
+### Reproduce Results
+To reproduce the results (except for the Carlini Wagner attack), clone the latest version of cleverhans`git clone https://github.com/tensorflow/cleverhans` and then run main.py.
+
+Please note that you would need to install tensorflow 2.2.0 to run these files. The full details are found in `requirements.txt`. 
+
+## Report
+The final report for this project is found [here](https://github.com/vin-nag/checkYourPerturbations/blob/master/documentation/ECE653_Project%20(5).pdf).
+
