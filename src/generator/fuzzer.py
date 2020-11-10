@@ -17,7 +17,7 @@ import tensorflow as tf
 from tensorflow.keras import utils, losses
 import numpy as np
 from src.utils import areSimilar
-from lime import lime_image
+from tf_explain.core import IntegratedGradients
 import time
 
 
@@ -136,11 +136,8 @@ class XAIFuzzer(Fuzzer):
 
     def __init__(self, name, model, modelName, image, label, similarityType="l2", similarityMeasure=10, verbose=True):
         super().__init__(name, model, modelName, image, label, similarityType, similarityMeasure, verbose)
-        explainer = lime_image.LimeImageExplainer()
-        logits_model = tf.keras.Model(self.model.input, self.model.layers[-1].output)
-        self.explanationMask = explainer.explain_instance(image.squeeze(), logits_model, top_labels=10, hide_color=1,
-                                                          num_samples=100).get_image_and_mask(label)[1]
-        self.explanationMask = np.expand_dims(np.expand_dims(self.explanationMask, 0), 3)
+        explainer = IntegratedGradients()
+        self.explanationMask = explainer.explain( (image, label), model, class_index=label)
 
     def fuzzStep(self, image, epsilon, iters):
         """

@@ -13,7 +13,7 @@ Authors:
 """
 
 from src.generator.template import GeneratorTemplate
-from cleverhans.future.tf2.attacks import fast_gradient_method, basic_iterative_method, carlini_wagner_l2, madry_et_al
+from cleverhans.future.tf2.attacks import fast_gradient_method, basic_iterative_method, madry_et_al
 from src.utils import areSimilar
 import tensorflow as tf
 import numpy as np
@@ -65,10 +65,10 @@ class FGSM(CleverHansTemplate):
         return fast_gradient_method(model_fn, image, epsilon, norm, clip_min, clip_max)
 
 
-class CW(CleverHansTemplate):
-    """ This class implements the Fast Gradient Sign Method (using CleverHans)."""
-    def advStep(self,  model_fn, image, epsilon, clip_min=-1, clip_max=1, norm=2):
-        return carlini_wagner_l2(model_fn, image, clip_min=-1, clip_max=1)
+# class CW(CleverHansTemplate):
+#     """ This class implements the Fast Gradient Sign Method (using CleverHans)."""
+#     def advStep(self,  model_fn, image, epsilon, clip_min=-1, clip_max=1, norm=2):
+#         return carlini_wagner_l2(model_fn, image, clip_min=-1, clip_max=1)
 
 
 class Madry(CleverHansTemplate):
