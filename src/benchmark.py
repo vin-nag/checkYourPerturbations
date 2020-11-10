@@ -84,7 +84,7 @@ class Benchmark:
         self.similarityType = self.type["similarityType"] if similarityType is None else similarityType
         self.similarityMeasure = self.type["similarityMeasure"] if similarityMeasure is None else similarityMeasure
         self.verbose = verbose
-        self.createBenchmarkOne()
+        self.createBenchmark()
 
     def createBenchmark(self):
         """

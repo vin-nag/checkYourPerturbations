@@ -17,11 +17,11 @@ The code of the project is found in the `/src/` directory and run using the main
 
 ### Reproduce Results
 To reproduce the results, clone the latest version of cleverhans and follow these steps:
-1. `git clone https://github.com/tensorflow/cleverhans`
-2. `python3 main.py`
-3. `python3 plotter.py -i ./results/data/{Benchmark Name}/{Date} -o {location to save cactus plot} -t <time out limit>`
+1. Clone and install the latest stable version of Cleverhans: `git clone https://github.com/tensorflow/cleverhans && cd cleverhans && pip install .`
+2. Run the main file: `cd ../src/ && python3 main.py`
+3. Plot and save the results: `python3 plotter.py -i ./results/data/{Benchmark Name}/{Date} -o {location to save cactus plot} -t <time out limit>`
 
-Please note that you would need to install tensorflow 2.2.0 to run these files. The full requirements are found in `requirements.txt`. 
+Please note that you need to install tensorflow 2.2.0 to run these files. The full requirements are found in `requirements.txt`. 
 
 ## Report
 The final report for this project is found [here](https://github.com/vin-nag/checkYourPerturbations/blob/master/documentation/project_proposal.pdf).
