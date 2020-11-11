@@ -12,13 +12,15 @@ Authors:
     contact: vineel.nagisetty@uwaterloo.ca
 """
 
-from src.generator.template import GeneratorTemplate
+import time
+
+import numpy as np
 import tensorflow as tf
 from tensorflow.keras import utils, losses
-import numpy as np
-from src.utils import areSimilar
 from tf_explain.core import IntegratedGradients
-import time
+
+from src.generator.template import GeneratorTemplate
+from src.utils import areSimilar
 
 
 class Fuzzer(GeneratorTemplate):
