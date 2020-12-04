@@ -26,7 +26,7 @@ def main():
     :return: None
     """
     parser = argparse.ArgumentParser(description="Evaluate adversarial example generators on a given benchmark.")
-    parser.add_argument('--benchmark', type=BenchmarkEnums, default=BenchmarkEnums.Demo)
+    parser.add_argument('--benchmark', type=BenchmarkEnums, default=BenchmarkEnums.Main)
     parser.add_argument('--verbose', action='store_true', default=False)
     try:
         args = parser.parse_args()
