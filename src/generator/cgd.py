@@ -29,9 +29,10 @@ class CGDTemplate(GeneratorTemplate):
 
     def __init__(self, name, model, modelName, image, label, similarityType="l2", similarityMeasure=10, verbose=True):
         super().__init__(name, model, modelName, image, label, similarityType, similarityMeasure, verbose)
-        self.advImage = tf.random.normal(self.image.shape, mean=0.0, stddev=1.0, dtype=tf.dtypes.float32, seed=None, name=None)
+        self.advImage = tf.random.normal(self.image.shape, mean=0.0, stddev=1.0, dtype=tf.float32)
         self.updateEpsilon = 0.01
         self.convertedLabel = tf.reshape(tf.one_hot(self.label, 10), (1, 10))
+        self.loss_object = tf.losses.CategoricalCrossentropy()
 
     def generateAdversarialExample(self):
         """
@@ -44,7 +45,7 @@ class CGDTemplate(GeneratorTemplate):
             if self.advLabel != self.label and areSimilar(self.image, self.advImage.numpy(),
                                                           similarityMeasure=self.similarityMeasure):
                 break
-            self.advImage = tf.clip_by_value(self.advImage + self.updateEpsilon * self.solve(), -1, 1)
+            self.advImage = tf.clip_by_value(self.advImage + self.updateEpsilon * self.solve(), -1.0, 1.0)
         end_time = time.time()
         self.time = end_time - start_time
         self.advImage = self.advImage.numpy()
@@ -67,6 +68,5 @@ class CGDTemplate(GeneratorTemplate):
 
 class CGDSimilar(CGDTemplate):
     def cgdLoss(self, prediction):
-        loss_object = tf.losses.CategoricalCrossentropy()
-        loss = loss_object(self.convertedLabel, prediction) - norm(self.advImage - self.image, ord='euclidean')
+        loss = self.loss_object(self.convertedLabel, prediction) - norm(self.advImage - self.image, ord='euclidean')
         return loss

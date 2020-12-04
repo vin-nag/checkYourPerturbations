@@ -17,6 +17,8 @@ from enum import Enum
 from tensorflow import keras
 import numpy as np
 import pandas as pd
+import onnx
+from onnx_tf.backend import prepare
 
 
 class BenchmarkEnums(Enum):
@@ -26,7 +28,7 @@ class BenchmarkEnums(Enum):
         "models": ["./../src/data/models/MNIST/regularCNN"],
         "images": "./../src/data/images/MNIST/demo.npy",
         "similarityType": "l2",
-        "similarityMeasure": 10,
+        "similarityMeasure": 5,
         "timeLimit": 50
     }
 
@@ -62,6 +64,14 @@ class BenchmarkEnums(Enum):
         "timeLimit": 600
     }
 
+    # ONNX = {
+    #     "models": ["./../src/data/onnx/Big_Sparse_SET3.onnx"],
+    #     "images": "./../src/data/images/MNIST/demo.npy",
+    #     "similarityType": "l2",
+    #     "similarityMeasure": 10,
+    #     "timeLimit": 50
+    # }
+
     def __str__(self):
         return self.value
 
@@ -94,9 +104,9 @@ class Benchmark:
         i = 0
         if self.verbose:
             print(f"Creating benchmark: {self.name}")
-        for modelName in self.type["models"]:
-            model = keras.models.load_model(modelName)
-            onlyModelName = modelName[modelName.rfind("/") + 1:]
+        if self.type["models"][0].endswith(".onnx"):
+            model = onnx.load(self.type["models"][0])
+            onlyModelName ="onnx"
             if self.verbose:
                 print(f"Loaded model: {onlyModelName}")
             imageSets = self.type["images"]
@@ -104,12 +114,29 @@ class Benchmark:
             size = images.shape[0]
             for index in range(size):
                 image, label = images[index, 0], images[index, 1]
-                pred = np.argmax(model.predict(image), axis=1)[0]
+                pred = np.argmax(prepare(model).run(image)[0][0])
                 if pred == label:
                     self.data.loc[i] = [onlyModelName, model, image, label]
                     i += 1
             self.numImages = i
-        print(f"Created benchmark: {self.name} with shape: {self.data.shape}.")
+            print(f"Created onnx benchmark: {self.name} with shape: {self.data.shape}.")
+        else:
+            for modelName in self.type["models"]:
+                model = keras.models.load_model(modelName)
+                onlyModelName = modelName[modelName.rfind("/") + 1:]
+                if self.verbose:
+                    print(f"Loaded model: {onlyModelName}")
+                imageSets = self.type["images"]
+                images = np.load(imageSets, allow_pickle=True)
+                size = images.shape[0]
+                for index in range(size):
+                    image, label = images[index, 0], images[index, 1]
+                    pred = np.argmax(model.predict(image), axis=1)[0]
+                    if pred == label:
+                        self.data.loc[i] = [onlyModelName, model, image, label]
+                        i += 1
+                self.numImages = i
+            print(f"Created benchmark: {self.name} with shape: {self.data.shape}.")
 
     def getData(self):
         """

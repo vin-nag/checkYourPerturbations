@@ -22,12 +22,11 @@ from src.generator.cgd import CGDTemplate, CGDSimilar
 
 class GeneratorTypes(Enum):
     """ This enum contains the various generators we wish to evaluate. """
-    # fgsm = FGSM
+    fgsm = FGSM
     # bim = BIM
     # madry = Madry
     # step = StepFuzzer
-    # laplace = LaplaceFuzzer
-    # XAI = XAIFuzzer
+    laplace = LaplaceFuzzer
     # ga = SimilarGenetic
     # VinFuzz = VinFuzzer
     # DLFuzz = DLFuzzer
