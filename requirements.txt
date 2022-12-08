@@ -5,7 +5,7 @@ attrs==19.3.0
 backcall==0.2.0
 bleach==1.5.0
 cachetools==4.1.1
-certifi==2020.6.20
+certifi==2022.12.7
 chardet==3.0.4
 cleverhans @ file:///home/vineel/PycharmProjects/cs858/checkYourPerturbations/cleverhans
 cloudpickle==1.3.0
